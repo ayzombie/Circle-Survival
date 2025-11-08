@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css">
+        <title>Schoology</title>
+    </head>
+    <body>
+        <canvas id="gameCanvas" width="500" height="400"></canvas>
+
+        <div id="levelUpMenu"></div>
+        <button id="resetBtn" class="button">RESTART GAME</button>
+
+        <button id="buyMagicWand" data-description="A wand that shoots projectiles">Buy Magic Wand</button>
+        <button id="upgradeMagicWand" data-description="Upgrades your wand to level 2">Upgrade Wand Lv2</button>
+        <button id="upgradeMagicWand2" data-description="Upgrades your wand to level 3">Upgrade Wand Lv3</button>
+        <button id="upgradeMagicWand3" data-description="Upgrades your wand to level 4">Upgrade Wand Lv4</button>
+        <button id="upgradeMagicWand4" data-description="Upgrades your wand to level 5">Upgrade Wand Lv5</button>
+        <button id="upgradeMagicWand5" data-description="Upgrades your wand to level 6">Upgrade Wand Lv6</button>
+        <button id="upgradeMagicWand6" data-description="Upgrades your wand to level 7">Upgrade Wand Lv7</button>
+        <button id="upgradeMagicWand7" data-description="Upgrades your wand to level 8">Upgrade Wand Lv8</button>
+        <button id="upgradeMagicWand8" data-description="Upgrades your wand to level 9">Upgrade Wand Lv9</button>
+
+        <button id="buyshockWave" data-description="A shockWave for devastating melee attacks">Buy shockWave</button>
+        <button id="upgradeshockWave1" data-description="Upgrades your shockWave to level 2">Upgrade shockWave Lv2</button>
+        <button id="upgradeshockWave2" data-description="Upgrades your shockWave to level 3">Upgrade shockWave Lv3</button>
+        <button id="upgradeshockWave3" data-description="Upgrades your shockWave to level 4">Upgrade shockWave Lv4</button>
+        <button id="upgradeshockWave4" data-description="Upgrades your shockWave to level 5">Upgrade shockWave Lv5</button>
+        <button id="upgradeshockWave5" data-description="Upgrades your shockWave to level 6">Upgrade shockWave Lv6</button>
+        <button id="upgradeshockWave6" data-description="Upgrades your shockWave to level 7">Upgrade shockWave Lv7</button>
+        <button id="upgradeshockWave7" data-description="Upgrades your shockWave to level 8">Upgrade shockWave Lv8</button>
+        <button id="upgradeshockWave8" data-description="Upgrades your shockWave to level 9">Upgrade shockWave Lv9</button>
+
+        <button id="buyFireWand" data-description="A wand that shoots piercing fireballs">Buy Fire Wand</button>
+        <button id="upgradeFireWand1" data-description="Upgrades your Fire Wand to level 2">Upgrade Fire Wand Lv2</button>
+        <button id="upgradeFireWand2" data-description="Upgrades your Fire Wand to level 3">Upgrade Fire Wand Lv3</button>
+        <button id="upgradeFireWand3" data-description="Upgrades your Fire Wand to level 4">Upgrade Fire Wand Lv4</button>
+        <button id="upgradeFireWand4" data-description="Upgrades your Fire Wand to level 5">Upgrade Fire Wand Lv5</button>
+        <button id="upgradeFireWand5" data-description="Upgrades your Fire Wand to level 6">Upgrade Fire Wand Lv6</button>
+        <button id="upgradeFireWand6" data-description="Upgrades your Fire Wand to level 7">Upgrade Fire Wand Lv7</button>
+        <button id="upgradeFireWand7" data-description="Upgrades your Fire Wand to level 8">Upgrade Fire Wand Lv8</button>
+        <button id="upgradeFireWand8" data-description="Upgrades your Fire Wand to level 9">Upgrade Fire Wand Lv9</button>
+
+        <button id="buyMoreStuff" class="button">buy More Stuff</button>
+
+        <button id="buySpinach" data-description="Boosts your overall damage by 10%">Buy Spinach</button>
+        <button id="upgradeSpinach1" data-description="Boosts your damage by 10%">Upgrade Spinach Lv2</button>
+        <button id="upgradeSpinach2" data-description="Boosts your damage by 10%">Upgrade Spinach Lv3</button>
+        <button id="upgradeSpinach3" data-description="Boosts your damage by 10%">Upgrade Spinach Lv4</button>
+        <button id="upgradeSpinach4" data-description="Boosts your damage by 20%">Upgrade Spinach Lv5</button>
+
+        <button id="buyFrostStaff" data-description="A staff that fires freezing projectiles">Buy Frost Staff</button>
+        <button id="upgradeFrostStaff1" data-description="Upgrades your Frost Staff to level 2">Upgrade Frost Staff Lv2</button>
+        <button id="upgradeFrostStaff2" data-description="Upgrades your Frost Staff to level 3">Upgrade Frost Staff Lv3</button>
+        <button id="upgradeFrostStaff3" data-description="Upgrades your Frost Staff to level 4">Upgrade Frost Staff Lv4</button>
+        <button id="upgradeFrostStaff4" data-description="Upgrades your Frost Staff to level 5">Upgrade Frost Staff Lv5</button>
+        <button id="upgradeFrostStaff5" data-description="Upgrades your Frost Staff to level 6">Upgrade Frost Staff Lv6</button>
+        <button id="upgradeFrostStaff6" data-description="Upgrades your Frost Staff to level 7">Upgrade Frost Staff Lv7</button>
+        <button id="upgradeFrostStaff7" data-description="Upgrades your Frost Staff to level 8">Upgrade Frost Staff Lv8</button>
+        <button id="upgradeFrostStaff8" data-description="Upgrades your Frost Staff to level 9">Upgrade Frost Staff Lv9</button>
+
+        <button id="buyMagnet" data-description="Attracts drops from farther away">Buy Magnet</button>
+        <button id="upgradeMagnet1" data-description="Increases magnet range">Upgrade Magnet Lv2</button>
+        <button id="upgradeMagnet2" data-description="Further increases magnet range">Upgrade Magnet Lv3</button>
+        <button id="upgradeMagnet3" data-description="Greatly increases magnet range">Upgrade Magnet Lv4</button>
+        <button id="upgradeMagnet4" data-description="Maximizes magnet range">Upgrade Magnet Lv5</button>
+
+        <button id="buyOrbitBlade" data-description="A blade that orbits around you in melee range">Buy Orbit Blade</button>
+        <button id="upgradeOrbitBlade1" data-description="Upgrades your Orbit Blade to level 2">Upgrade Orbit Blade Lv2</button>
+        <button id="upgradeOrbitBlade2" data-description="Upgrades your Orbit Blade to level 3">Upgrade Orbit Blade Lv3</button>
+        <button id="upgradeOrbitBlade3" data-description="Upgrades your Orbit Blade to level 4">Upgrade Orbit Blade Lv4</button>
+        <button id="upgradeOrbitBlade4" data-description="Upgrades your Orbit Blade to level 5">Upgrade Orbit Blade Lv5</button>
+        <button id="upgradeOrbitBlade5" data-description="Upgrades your Orbit Blade to level 6">Upgrade Orbit Blade Lv6</button>
+        <button id="upgradeOrbitBlade6" data-description="Upgrades your Orbit Blade to level 7">Upgrade Orbit Blade Lv7</button>
+        <button id="upgradeOrbitBlade7" data-description="Upgrades your Orbit Blade to level 8">Upgrade Orbit Blade Lv8</button>
+        <button id="upgradeOrbitBlade8" data-description="Upgrades your Orbit Blade to level 9">Upgrade Orbit Blade Lv9</button>
+
+        <button id="buyLavaEruption" data-description="Causes periodic fiery eruptions beneath enemies">Buy Lava Eruption</button>
+        <button id="upgradeLavaEruption1" data-description="Upgrade Lava Eruption to Level 2: larger eruptions">Upgrade Lava Eruption Lv2</button>
+        <button id="upgradeLavaEruption2" data-description="Upgrade Lava Eruption to Level 3: more damage">Upgrade Lava Eruption Lv3</button>
+        <button id="upgradeLavaEruption3" data-description="Upgrade Lava Eruption to Level 4: faster cooldown">Upgrade Lava Eruption Lv4</button>
+        <button id="upgradeLavaEruption4" data-description="Upgrade Lava Eruption to Level 5: more lava spots">Upgrade Lava Eruption Lv5</button>
+        <button id="upgradeLavaEruption5" data-description="Upgrade Lava Eruption to Level 6: even more damage">Upgrade Lava Eruption Lv6</button>
+        <button id="upgradeLavaEruption6" data-description="Upgrade Lava Eruption to Level 7: longer burning">Upgrade Lava Eruption Lv7</button>
+        <button id="upgradeLavaEruption7" data-description="Upgrade Lava Eruption to Level 8: massive area">Upgrade Lava Eruption Lv8</button>
+        <button id="upgradeLavaEruption8" data-description="Upgrade Lava Eruption to Level 9: ultimate eruption power">Upgrade Lava Eruption Lv9</button>
+        <script type="module" src="main.js"></script>
+    </body>
+</html>

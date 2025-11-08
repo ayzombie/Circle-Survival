@@ -1,0 +1,68 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+.button {
+    background-color: #4CAF50; /* green base */
+    color: blue;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bolder;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 0 #3e8e41; /* fake depth */
+    margin: 30px;
+  }
+  
+.button:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+}
+  
+.button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #3e8e41;
+}
+
+#levelUpMenu {
+    display: none;              /* hide by default */
+    position: absolute;         
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    background: black; 
+    padding: 10px; 
+    border-radius: 10px; 
+    color: white;
+
+    display: flex;              /* make it a flex container */
+    flex-direction: column;     /* stack children vertically */
+    align-items: center;        /* optional: center buttons horizontally */
+    gap: 5px;                  /* vertical space between buttons */
+}
+
+#resetBtn {
+    position: absolute;
+    left: 25%;
+    top: 25%;
+    background-color: red;
+    font-size: 90px;
+    padding: 30px 30px;
+    color: yellow;
+    box-shadow: 0 4px 0 rgb(183, 13, 13);
+}
+
+.damage-number {
+    position: absolute;
+    color: yellow;
+    font-weight: bold;
+    font-size: 18px;
+    text-shadow: 0 0 6px black;
+    pointer-events: none;
+    transition: opacity 1s ease-out, transform 1s ease-out;
+    z-index: 1000;
+}
