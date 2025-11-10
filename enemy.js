@@ -60,7 +60,7 @@ export class Enemy {
     }
 
     takeDmg(dmg) {
-        const totalDmg = dmg * (this.player.spinach * 0.1 + 1);
+        const totalDmg = dmg * (this.player.spinach * 0.1 + 1) * (this.player.level * 0.02 + 1);
         this.health -= totalDmg;
         this.showDamageNumber(totalDmg);
         if (Math.round(this.health) <= 0) this.alive = false;

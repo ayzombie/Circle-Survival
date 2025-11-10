@@ -897,7 +897,7 @@ function spawnEnemies() {
         y = Math.random() * canvas.height;
         break;
     }
-    enemyHealth *= 1 + difCounter * 0.01;
+    enemyHealth *= 1 + difCounter * 0.0002;
     let minHP = Math.floor(enemyHealth - 3);
     let maxHP = Math.ceil(enemyHealth + 3);
     let thisHP = Math.floor(Math.random() * (maxHP - minHP + 1)) + minHP;
@@ -1215,7 +1215,7 @@ function gameLoop(time) {
     }
     const deltaTime = time - lastTime;
     lastTime = time;
-    if (!paused) difCounter += (1 / (1 + difficulty * 500)) * 0.00005;
+    if (!paused) difCounter += (1 / (1 + difficulty * 500)) * 0.00001;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (player.previousLevel == player.level) {

@@ -95,6 +95,7 @@ export class Weapon {
 
 
 
+//rotate thing
 export class OrbitBlade extends Weapon {
   constructor(player) {
     super(player);
@@ -783,5 +784,57 @@ export class LavaEruption extends Weapon {
       ctx.arc(lava.x, lava.y, lava.radius, 0, Math.PI * 2);
       ctx.fill();
     }
+  }
+}
+
+
+
+class LifeSteal {
+  constructor(x, y, dirX, dirY, speed, damage, lifesteal, range) {
+    this.x = x;
+    this.y = y;
+    this.dirX = dirX;
+    this.dirY = dirY;
+    this.speed = speed;
+    this.damage = damage;
+    this.lifesteal = lifesteal;
+    this.range = range;
+    this.travel = 0;
+    this.alive = true;
+    this.radius = 6;
+  }
+
+  update(deltaTime, enemies, player, canvasWidth, canvasHeight) {
+    if (!this.alive) return;
+
+    const dx = this.dirX * this.speed;
+    const dy = this.dirY * this.speed;
+    this.x += dx;
+    this.y += dy;
+    this.travel += Math.hypot(dx, dy);
+
+    // Kill projectile if out of range
+    if (this.travel > this.range) this.alive = false;
+
+    // Enemy collisions
+    for (const enemy of enemies) {
+      if (!enemy.alive) continue;
+      const dist = Math.hypot(this.x - enemy.x, this.y - enemy.y);
+      if (dist < this.radius + enemy.radius) {
+        enemy.takeDamage?.(this.damage);
+        player.health = Math.min(player.maxHealth, player.health + this.lifesteal);
+        this.alive = false;
+        break;
+      }
+    }
+  }
+
+  draw(ctx) {
+    ctx.save();
+    ctx.fillStyle = "rgba(200, 0, 0, 0.85)";
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
   }
 }
