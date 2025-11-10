@@ -67,6 +67,34 @@ export class MagicBolt {
     ctx.fill();
   }
 }
+// MagicBolt Evolved!
+export class MagicMissile {
+  constructor(x, y, dirX, dirY, speed, bounces) {
+    this.x = x;
+    this.y = y;
+    this.dirX = dirX;
+    this.dirY = dirY;
+    this.speed = speed;
+    this.radius = 10;
+    this.alive = true;
+    this.bounces = bounces;
+  }
+  
+  update() {
+    this.x += this.dirX * this.speed;
+    this.y += this.dirY * this.speed;
+  }
+
+  draw(ctx) {
+    ctx.fillStyle = "#39C5FF";
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+
+
 
 export class FireBall {
   constructor(x, y, dirX, dirY, speed, maxHits) {
@@ -153,8 +181,8 @@ export class OrbitSword {
 
   update(deltaTime) {
     this.angle += this.rotationSpeed * deltaTime;
-    const px = this.player.x + this.player.width / 2;
-    const py = this.player.y + this.player.height / 2;
+    const px = this.player.x + this.player.width / 2 - 13;
+    const py = this.player.y + this.player.height / 2 - 13;
     this.x = px + Math.cos(this.angle) * this.orbitRadius;
     this.y = py + Math.sin(this.angle) * this.orbitRadius;
   }

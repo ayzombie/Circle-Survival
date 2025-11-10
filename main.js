@@ -1,8 +1,8 @@
 import { Player } from "./player.js";
 import { Enemy } from "./enemy.js";
 import { Ammo } from "./ammo.js";
-import { Drop } from "./drops.js";
 import { MagicWand } from "./weapons.js";
+import { HolyWand } from "./weapons.js";
 import { FireWand } from "./weapons.js";
 import { ShockWave } from "./weapons.js";
 import { FrostStaff } from "./weapons.js";
@@ -82,30 +82,45 @@ const upgradeLavaEruption5 = document.getElementById("upgradeLavaEruption5");
 const upgradeLavaEruption6 = document.getElementById("upgradeLavaEruption6");
 const upgradeLavaEruption7 = document.getElementById("upgradeLavaEruption7");
 const upgradeLavaEruption8 = document.getElementById("upgradeLavaEruption8");
+const buyXpMulti = document.getElementById("buyXpMulti");
+const upgradeXpMulti1 = document.getElementById("upgradeXpMulti1");
+const upgradeXpMulti2 = document.getElementById("upgradeXpMulti2");
+const upgradeXpMulti3 = document.getElementById("upgradeXpMulti3");
+const upgradeXpMulti4 = document.getElementById("upgradeXpMulti4");
+const buyHolyWand = document.getElementById("buyHolyWand");
+const upgradeHolyWand1 = document.getElementById("upgradeHolyWand1");
+const upgradeHolyWand2 = document.getElementById("upgradeHolyWand2");
+const upgradeHolyWand3 = document.getElementById("upgradeHolyWand3");
+const upgradeHolyWand4 = document.getElementById("upgradeHolyWand4");
+const upgradeHolyWand5 = document.getElementById("upgradeHolyWand5");
+const upgradeHolyWand6 = document.getElementById("upgradeHolyWand6");
+const upgradeHolyWand7 = document.getElementById("upgradeHolyWand7");
+const upgradeHolyWand8 = document.getElementById("upgradeHolyWand8");
+const upgradeHolyWand9 = document.getElementById("upgradeHolyWand9");
 
 
 
 
 
 let buttons = [ 
-    // buymagicWand,
-    // upgradeMagicWand,
-    // upgradeMagicWand2,
-    // upgradeMagicWand3,
-    // upgradeMagicWand4,
-    // upgradeMagicWand5,
-    // upgradeMagicWand6,
-    // upgradeMagicWand7,
-    // upgradeMagicWand8,
-    // buyFireWand,
-    // upgradeFireWand1,
-    // upgradeFireWand2,
-    // upgradeFireWand3,
-    // upgradeFireWand4,
-    // upgradeFireWand5,
-    // upgradeFireWand6,
-    // upgradeFireWand7,
-    // upgradeFireWand8,
+    buymagicWand,
+    upgradeMagicWand,
+    upgradeMagicWand2,
+    upgradeMagicWand3,
+    upgradeMagicWand4,
+    upgradeMagicWand5,
+    upgradeMagicWand6,
+    upgradeMagicWand7,
+    upgradeMagicWand8,
+    buyFireWand,
+    upgradeFireWand1,
+    upgradeFireWand2,
+    upgradeFireWand3,
+    upgradeFireWand4,
+    upgradeFireWand5,
+    upgradeFireWand6,
+    upgradeFireWand7,
+    upgradeFireWand8,
     buyshockWave,
     upgradeshockWave1,
     upgradeshockWave2,
@@ -115,11 +130,11 @@ let buttons = [
     upgradeshockWave6,
     upgradeshockWave7,
     upgradeshockWave8,
-    // buySpinach,
-    // upgradeSpinach1,
-    // upgradeSpinach2,
-    // upgradeSpinach3,
-    // upgradeSpinach4,
+    buySpinach,
+    upgradeSpinach1,
+    upgradeSpinach2,
+    upgradeSpinach3,
+    upgradeSpinach4,
     buyFrostStaff,
     upgradeFrostStaff1,
     upgradeFrostStaff2,
@@ -134,15 +149,15 @@ let buttons = [
     upgradeMagnet2,
     upgradeMagnet3,
     upgradeMagnet4,
-    // buyOrbitBlade,
-    // upgradeOrbitBlade1,
-    // upgradeOrbitBlade2,
-    // upgradeOrbitBlade3,
-    // upgradeOrbitBlade4,
-    // upgradeOrbitBlade5,
-    // upgradeOrbitBlade6,
-    // upgradeOrbitBlade7,
-    // upgradeOrbitBlade8,
+    buyOrbitBlade,
+    upgradeOrbitBlade1,
+    upgradeOrbitBlade2,
+    upgradeOrbitBlade3,
+    upgradeOrbitBlade4,
+    upgradeOrbitBlade5,
+    upgradeOrbitBlade6,
+    upgradeOrbitBlade7,
+    upgradeOrbitBlade8,
     buyLavaEruption,
     upgradeLavaEruption1,
     upgradeLavaEruption2,
@@ -151,7 +166,22 @@ let buttons = [
     upgradeLavaEruption5,
     upgradeLavaEruption6,
     upgradeLavaEruption7,
-    upgradeLavaEruption8
+    upgradeLavaEruption8,
+    buyXpMulti,
+    upgradeXpMulti1,
+    upgradeXpMulti2,
+    upgradeXpMulti3,
+    upgradeXpMulti4,
+    buyHolyWand,
+    upgradeHolyWand1,
+    upgradeHolyWand2,
+    upgradeHolyWand3,
+    upgradeHolyWand4,
+    upgradeHolyWand5,
+    upgradeHolyWand6,
+    upgradeHolyWand7,
+    upgradeHolyWand8,
+    upgradeHolyWand9
 ];
 buttons.forEach(btn => btn.style.display = "none");
 
@@ -164,7 +194,7 @@ let paused = false;
 let pausedGame = false;
 let lastTime = 0;
 let difCounter = 0.01;
-let difficulty = 0.00005;
+let difficulty = 0.00005; //originally 0.00005
 let enemyHealth = 5;
 let timer = 0;
 let alpha = 0;
@@ -707,9 +737,131 @@ function loadButtons() {
         const eruption = player.inventory.find(w => w.constructor && w.constructor.name === "LavaEruption");
         if (eruption) eruption.level = 9;
     });
+
+    buyXpMulti.addEventListener("click", () => {
+        player.xpMulti = 1.2;
+        console.log("Bought XP Multiplier! XP gain x1.2");
+        buttons = buttons.filter(b => b !== buyXpMulti);
+        buttons.push(upgradeXpMulti1);
+    });
+    
+    upgradeXpMulti1.addEventListener("click", () => {
+        player.xpMulti = 1.4;
+        console.log("Upgraded XP Multiplier to Lv2! XP gain x1.4");
+        buttons = buttons.filter(b => b !== upgradeXpMulti1);
+        buttons.push(upgradeXpMulti2);
+    });
+    
+    upgradeXpMulti2.addEventListener("click", () => {
+        player.xpMulti = 1.7;
+        console.log("Upgraded XP Multiplier to Lv3! XP gain x1.7");
+        buttons = buttons.filter(b => b !== upgradeXpMulti2);
+        buttons.push(upgradeXpMulti3);
+    });
+    
+    upgradeXpMulti3.addEventListener("click", () => {
+        player.xpMulti = 2;
+        console.log("Upgraded XP Multiplier to Lv4! XP gain x2");
+        buttons = buttons.filter(b => b !== upgradeXpMulti3);
+        buttons.push(upgradeXpMulti4);
+    });
+    
+    upgradeXpMulti4.addEventListener("click", () => {
+        player.xpMulti = 2.5;
+        console.log("Upgraded XP Multiplier to Lv5! XP gain x2.5 (MAX)");
+        buttons = buttons.filter(b => b !== upgradeXpMulti4);
+        // Max level reached, do not push further upgrades
+    });
+
+    buyHolyWand.addEventListener("click", () => {
+        // Add Holy Wand to player inventory (as an evolved Magic Wand)
+        player.inventory.push(new HolyWand(player));
+        console.log("Bought Holy Wand! (Evolved Magic Wand)");
+        buttons = buttons.filter(b => b !== buyHolyWand);
+        buttons.push(upgradeHolyWand1);
+    });
+
+    upgradeHolyWand1.addEventListener("click", () => {
+        // Upgrade Holy Wand to level 2
+        const wand = player.inventory.find(w => w.constructor && w.constructor.name === "HolyWand");
+        if (wand) wand.level = 2;
+        console.log("Upgraded Holy Wand to Level 2!");
+        buttons = buttons.filter(b => b !== upgradeHolyWand1);
+        buttons.push(upgradeHolyWand2);
+    });
+
+    upgradeHolyWand2.addEventListener("click", () => {
+        // Upgrade Holy Wand to level 3
+        const wand = player.inventory.find(w => w.constructor && w.constructor.name === "HolyWand");
+        if (wand) wand.level = 3;
+        console.log("Upgraded Holy Wand to Level 3!");
+        buttons = buttons.filter(b => b !== upgradeHolyWand2);
+        buttons.push(upgradeHolyWand3);
+    });
+
+    upgradeHolyWand3.addEventListener("click", () => {
+        // Upgrade Holy Wand to level 4
+        const wand = player.inventory.find(w => w.constructor && w.constructor.name === "HolyWand");
+        if (wand) wand.level = 4;
+        console.log("Upgraded Holy Wand to Level 4!");
+        buttons = buttons.filter(b => b !== upgradeHolyWand3);
+        buttons.push(upgradeHolyWand4);
+    });
+
+    upgradeHolyWand4.addEventListener("click", () => {
+        // Upgrade Holy Wand to level 5
+        const wand = player.inventory.find(w => w.constructor && w.constructor.name === "HolyWand");
+        if (wand) wand.level = 5;
+        console.log("Upgraded Holy Wand to Level 5!");
+        buttons = buttons.filter(b => b !== upgradeHolyWand4);
+        buttons.push(upgradeHolyWand5);
+    });
+
+    upgradeHolyWand5.addEventListener("click", () => {
+        // Upgrade Holy Wand to level 6
+        const wand = player.inventory.find(w => w.constructor && w.constructor.name === "HolyWand");
+        if (wand) wand.level = 6;
+        console.log("Upgraded Holy Wand to Level 6!");
+        buttons = buttons.filter(b => b !== upgradeHolyWand5);
+        buttons.push(upgradeHolyWand6);
+    });
+
+    upgradeHolyWand6.addEventListener("click", () => {
+        // Upgrade Holy Wand to level 7
+        const wand = player.inventory.find(w => w.constructor && w.constructor.name === "HolyWand");
+        if (wand) wand.level = 7;
+        console.log("Upgraded Holy Wand to Level 7!");
+        buttons = buttons.filter(b => b !== upgradeHolyWand6);
+        buttons.push(upgradeHolyWand7);
+    });
+
+    upgradeHolyWand7.addEventListener("click", () => {
+        // Upgrade Holy Wand to level 8
+        const wand = player.inventory.find(w => w.constructor && w.constructor.name === "HolyWand");
+        if (wand) wand.level = 8;
+        console.log("Upgraded Holy Wand to Level 8!");
+        buttons = buttons.filter(b => b !== upgradeHolyWand7);
+        buttons.push(upgradeHolyWand8);
+    });
+
+    upgradeHolyWand8.addEventListener("click", () => {
+        // Upgrade Holy Wand to level 9
+        const wand = player.inventory.find(w => w.constructor && w.constructor.name === "HolyWand");
+        if (wand) wand.level = 9;
+        console.log("Upgraded Holy Wand to Level 9!");
+        buttons = buttons.filter(b => b !== upgradeHolyWand8);
+        buttons.push(upgradeHolyWand9);
+    });
+
+    upgradeHolyWand9.addEventListener("click", () => {
+        // Upgrade Holy Wand to level 10 (max level)
+        const wand = player.inventory.find(w => w.constructor && w.constructor.name === "HolyWand");
+        if (wand) wand.level = 10;
+        console.log("Upgraded Holy Wand to Level 10! (MAX)");
+        buttons = buttons.filter(b => b !== upgradeHolyWand9);
+        // No further upgrades
+    });
 };
-
-
 
 
 
@@ -745,9 +897,9 @@ function spawnEnemies() {
         y = Math.random() * canvas.height;
         break;
     }
-    enemyHealth += Math.round(difficulty * 500);
-    let minHP = enemyHealth - 3;
-    let maxHP = enemyHealth + 3;
+    enemyHealth *= 1 + difCounter * 0.01;
+    let minHP = Math.floor(enemyHealth - 3);
+    let maxHP = Math.ceil(enemyHealth + 3);
     let thisHP = Math.floor(Math.random() * (maxHP - minHP + 1)) + minHP;
     enemies.push(new Enemy(x, y, 1, 4, thisHP, player));
 }
@@ -836,6 +988,25 @@ function isButtonValid(btn) {
     
         return targetLevel === lava.level;
     }
+
+    if (id.startsWith("upgradeXpMulti")) {
+        if (player.xpMulti == 1) return false;
+    
+        const match = id.match(/\d+$/);
+        const targetLevel = match ? parseInt(match[0]) : 1;
+    
+        return targetLevel === player.xpMulti;
+    }
+
+    if (id.startsWith("upgradeHolyWand")) {
+        const wand = player.inventory.find(w => w.constructor.name === "HolyWand");
+        if (!wand) return false;
+    
+        const match = id.match(/\d+$/);
+        const targetLevel = match ? parseInt(match[0]) : 1;
+    
+        return targetLevel === wand.level;
+    }
   
     // --- Handle buy buttons (always valid if not owned) ---
     if (id.startsWith("buyMagicWand")) {
@@ -862,12 +1033,20 @@ function isButtonValid(btn) {
     if (id.startsWith("buyLavaEruption")) {
         return !player.inventory.find(w => w.constructor.name === "LavaEruption");
     }
+    if (id.startsWith("buyXpMulti")) {
+        return player.xpMulti == 1; // can only buy once
+    }
+    if (id.startsWith("buyHolyWand")) {
+        const wand = player.inventory.find(w => w instanceof MagicWand);
+        if (!wand) return false;
+        const maxWand = wand.level >= 9;
+        return !player.inventory.find(w => w.constructor.name === "HolyWand") && maxWand;
+    }
     
   
     // other generic stuff is always valid
     return true;
 }
-
 
 function getOptions() {
     if (buttons.length === 0) return;
@@ -1036,7 +1215,7 @@ function gameLoop(time) {
     }
     const deltaTime = time - lastTime;
     lastTime = time;
-    if (!paused) difCounter += difficulty;
+    if (!paused) difCounter += (1 / (1 + difficulty * 500)) * 0.00005;
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (player.previousLevel == player.level) {

@@ -1,4 +1,5 @@
 import { MagicBolt } from "./projectile.js";
+import { MagicMissile } from "./projectile.js";
 import { FireBall } from "./projectile.js";
 import { SnowBall } from "./projectile.js";
 import { OrbitSword } from "./projectile.js";
@@ -16,7 +17,7 @@ export class Weapon {
     // Update all projectiles and check for collision
     for (let i = this.projectiles.length - 1; i >= 0; i--) {
       const p = this.projectiles[i];
-      p.update(deltaTime);
+      p.update(enemies);
   
       this.checkCollision(p, enemies);
   
@@ -45,24 +46,24 @@ export class Weapon {
         enemy.takeDmg(this.damage);
         if (projectile instanceof SnowBall) {
           enemy.applyFrost(projectile.slowness, projectile.slowTime);
-        }
-  
-        // ❄️ AoE explosion damage
-        if (projectile.area > 0) {
-          for (const aoeEnemy of enemies) {
-            if (!aoeEnemy.alive) continue;
-            const d = Math.hypot(aoeEnemy.x - projectile.x, aoeEnemy.y - projectile.y);
-            if (d <= projectile.area) {
-              aoeEnemy.takeDmg(this.damage * 0.7); // 70% splash damage
-              aoeEnemy.applyFrost(projectile.slowness, projectile.slowTime);
+          // ❄️ AoE explosion damage
+          if (projectile.area > 0) {
+            for (const aoeEnemy of enemies) {
+              if (!aoeEnemy.alive) continue;
+              const d = Math.hypot(aoeEnemy.x - projectile.x, aoeEnemy.y - projectile.y);
+              if (d <= projectile.area) {
+                aoeEnemy.takeDmg(this.damage * 0.7); // 70% splash damage
+                aoeEnemy.applyFrost(projectile.slowness, projectile.slowTime);
+              }
             }
+    
+            // optional visual effect
+            this.createExplosionEffect(enemy.x - 20, enemy.y - 50, projectile.area);
           }
-  
-          // optional visual effect
-          this.createExplosionEffect(enemy.x - 20, enemy.y - 50, projectile.area);
         }
-  
-        projectile.alive = false;
+        if (projectile) {
+          projectile.alive = false;
+        }
         return true;
       }
     }
@@ -214,7 +215,7 @@ export class OrbitBlade extends Weapon {
 export class MagicWand extends Weapon {
   constructor(player) {
     super(player);
-    this.cooldown = 1000;
+    this.cooldown = 1100;
     this.damage = 2;
     this.speed = 4;
     this.amount = 1;
@@ -230,7 +231,7 @@ export class MagicWand extends Weapon {
       this.speed = 5;
     }
     if (this.level == 4) {
-      this.cooldown = 700;
+      this.cooldown = 800;
       this.amount = 2;
     }
     if (this.level == 5) {
@@ -239,13 +240,13 @@ export class MagicWand extends Weapon {
     }
     if (this.level == 6) {
       this.amount = 4;
-      this.cooldown = 600;
+      this.cooldown = 700;
       this.speed = 5.5;
       this.damage = 20;
     }
     if (this.level == 7) {
       this.amount = 5;
-      this.cooldown = 400;
+      this.cooldown = 500;
       this.speed = 6;
       this.damage = 35;
     }
@@ -255,7 +256,7 @@ export class MagicWand extends Weapon {
     }
     if (this.level == 9) {
       this.amount = 8;
-      this.cooldown = 250;
+      this.cooldown = 350;
       this.speed = 8;
       this.damage = 30;
     }
@@ -277,6 +278,109 @@ export class MagicWand extends Weapon {
         this.projectiles.push(new MagicBolt(x, y, dirX, dirY, this.speed)); 
       }
     }
+  }
+}
+//HolyWand - ranged weapon
+export class HolyWand extends Weapon {
+  constructor(player) {
+    super(player);
+    this.cooldown = 500;
+    this.damage = 40;
+    this.speed = 6;
+    this.amount = 1;
+    this.level = 1;
+    this.bounces = 1;
+  }
+
+  update(deltaTime, enemies, canvas) {
+    // --- Level scaling logic ---
+    if (this.level == 2) this.cooldown = 400;
+    if (this.level == 3) { this.amount = 20; this.speed = 7; }
+    if (this.level == 4) this.bounces = 2;
+    if (this.level == 5) { this.damage = 50; this.bounces = 3; }
+    if (this.level == 6) { this.speed = 5.5; this.damage = 60; this.cooldown = 250; }
+    if (this.level == 7) { this.amount = 3; this.speed = 8; this.bounces = 4; }
+    if (this.level == 8) { this.speed = 9; this.damage = 60; }
+    if (this.level == 9) { this.cooldown = 150; this.damage = 70; this.bounces = 5; }
+    if (this.level == 10) { this.speed = 10; this.amount = 4; this.bounces = 10; }
+
+    super.update(deltaTime, enemies);
+    
+    let canvasWidth = canvas.width;
+    let canvasHeight = canvas.height;
+        // --- Shooting logic ---
+    if (Date.now() - this.lastShot > this.cooldown) {
+      this.lastShot = Date.now();
+      const x = (this.player.x + this.player.width / 2) - 15;
+      const y = (this.player.y + this.player.height / 2) - 15;
+
+      for (let i = 0; i < this.amount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dirX = Math.cos(angle);
+        const dirY = Math.sin(angle);
+
+        this.projectiles.push(
+          new MagicMissile(x, y, dirX, dirY, this.speed, this.bounces)
+        );
+      }
+    }
+
+    // --- Projectile movement and collision ---
+    for (const proj of this.projectiles) {
+      if (!proj.alive) continue;
+
+
+      // wall collisions
+      if (proj.x - proj.radius <= 0) {
+        proj.x = proj.radius;
+        proj.dirX = -proj.dirX;
+      } else if (proj.x + proj.radius >= canvasWidth) {
+        proj.x = canvasWidth - proj.radius;
+        proj.dirX = -proj.dirX;
+      }
+
+      if (proj.y - proj.radius <= 0) {
+        proj.y = proj.radius;
+        proj.dirY = -proj.dirY;
+      } else if (proj.y + proj.radius >= canvasHeight) {
+        proj.y = canvasHeight - proj.radius;
+        proj.dirY = -proj.dirY;
+      }
+
+      // enemy collisions
+      for (const enemy of enemies) {
+        if (!enemy.alive) continue;
+        const dx = proj.x - enemy.x;
+        const dy = proj.y - enemy.y;
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < proj.radius + enemy.radius) {
+          // Reflect direction
+          const nx = dx / dist;
+          const ny = dy / dist;
+          const dot = proj.dirX * nx + proj.dirY * ny;
+          proj.dirX -= 2 * dot * nx;
+          proj.dirY -= 2 * dot * ny;
+
+          // Normalize
+          const len = Math.hypot(proj.dirX, proj.dirY);
+          proj.dirX /= len;
+          proj.dirY /= len;
+
+          // Decrease bounces
+          proj.bounces--;
+          if (proj.bounces < 0) proj.alive = false;
+
+          // Deal damage
+          enemy.takeDamage?.(this.damage);
+
+          break;
+        }
+      }
+    }
+
+    // Remove dead projectiles
+    this.projectiles = this.projectiles.filter(p => p.alive);
   }
 }
 
@@ -384,126 +488,88 @@ export class ShockWave extends Weapon {
   constructor(player) {
     super(player);
     this.cooldown = 2500;     // attack every 0.8s
-    this.damage = 7;
-    this.range = 120;        // reach of shockwave
-    this.swingTime = 200;    // how long the swing lasts
+    this.damage = 2;
+    this.range = 50;        // reach of shockwave
+    this.swingTime = 150;    // how long the swing lasts
     this.swinging = false;
-    this.swingDir = 1;       // 1 = right, -1 = left
-    this.amount = 1;
     this.level = 1;
   }
 
   update(deltaTime, enemies) {
     // --- Level-based stat updates ---
     if (this.level === 2) {
-      this.damage = 10;
+      this.damage = 4;
     } else if (this.level === 3) {
-      this.range = 150;
+      this.range = 70;
       this.cooldown = 2000;
     } else if (this.level === 4) {
       this.cooldown = 1700;
-      this.damage = 15;
+      this.damage = 7;
     } else if (this.level === 5) {
-      this.cooldown = 1500;
+      this.cooldown = 1800;
+      this.range = 100;
     } else if (this.level === 6) {
-      this.cooldown = 1200;
-      this.swingTime = 400;
-      this.damage = 20;
+      this.swingTime = 300;
+      this.damage = 15;
     } else if (this.level === 7) {
-      this.amount = 2;        // Attack both sides
-      this.cooldown = 1000;
+      this.cooldown = 1500;
       this.damage = 25;
     } else if (this.level === 8) {
-      this.range = 170;
+      this.range = 125;
       this.damage = 35;
     } else if (this.level === 9) {
-      this.swingTime = 600;
-      this.cooldown = 700;
+      this.swingTime = 500;
+      this.cooldown = 1000;
       this.damage = 50;
     }
   
-    // --- Attack logic ---
-    const now = Date.now();
-    if (now - this.lastShot > this.cooldown && !this.swinging) {
-      this.lastShot = now;
-      this.swinging = true;
-      this.swingStart = now;
-  
-      // determine which directions to attack
-      const directions = this.amount >= 2 ? [-1, 1] : [this.swingDir];
-  
-      for (const dir of directions) {
-        const px = this.player.x + this.player.width / 2;
-        const py = this.player.y + this.player.height / 2;
-      
+      const now = Date.now();
+      if (now - this.lastShot > this.cooldown && !this.swinging) {
+        this.lastShot = now;
+        this.swinging = true;
+        this.swingStart = now;
+    
+        const px = this.player.x + this.player.width / 2 - 10;
+        const py = this.player.y + this.player.height / 2 - 10;
+    
         for (const enemy of enemies) {
           if (!enemy.alive) continue;
-      
           const dx = enemy.x - px;
           const dy = enemy.y - py;
           const dist = Math.hypot(dx, dy);
-          const angle = Math.atan2(dy, dx);
-      
-          // Define the active swing sector
-          const arcAngleStart = dir === 1 ? -Math.PI / 4 : (5 * Math.PI) / 4;
-          const arcAngleEnd   = dir === 1 ? Math.PI / 4 : (3 * Math.PI) / 4;
-      
-          // Normalize angle to [0, 2π)
-          const normAngle = (angle + 2 * Math.PI) % (2 * Math.PI);
-          const normStart = (arcAngleStart + 2 * Math.PI) % (2 * Math.PI);
-          const normEnd   = (arcAngleEnd + 2 * Math.PI) % (2 * Math.PI);
-      
-          // Check if enemy is within the wave radius
-          const insideWave = dist < this.range;
-      
-          // Check if enemy is touching the "shock line" (edge)
-          const onWaveEdge = Math.abs(dist - this.range / 1.5) < enemy.radius * 1.5;
-      
-          // Check if angle is inside the arc
-          const inArc =
-            normStart < normEnd
-              ? normAngle >= normStart && normAngle <= normEnd
-              : normAngle >= normStart || normAngle <= normEnd;
-      
-          if ((insideWave || onWaveEdge) && inArc) {
+    
+          // Damage if inside the shockwave circle
+          if (dist <= this.range) {
             enemy.takeDmg(this.damage);
           }
         }
-      }      
-  
-      // alternate main swing direction for next time (for visuals only)
-      this.swingDir *= -1;
-    }
-  
-    // --- End swing timer ---
-    if (this.swinging && now - this.swingStart > this.swingTime) {
-      this.swinging = false;
-    }
+      }
+    
+      // End swing timer
+      if (this.swinging && now - this.swingStart > this.swingTime) {
+        this.swinging = false;
+      }
+        
   }
 
   draw(ctx) {
     if (!this.swinging) return;
-
+  
+    const px = this.player.x + this.player.width / 2 - 13;
+    const py = this.player.y + this.player.height / 2 - 13  ; 
+  
     ctx.save();
+    ctx.fillStyle = "rgba(255, 165, 0, 0.3)"; // semi-transparent orange
     ctx.strokeStyle = "orange";
-    ctx.lineWidth = 5;
+    ctx.lineWidth = 3;
+  
     ctx.beginPath();
-
-    const px = this.player.x + this.player.width / 2;
-    const py = this.player.y + this.player.height / 2;
-
-    const startAngle = this.swingDir === 1 ? Math.PI / 4 : (3 * Math.PI) / 4;
-    const endAngle = this.swingDir === 1 ? -Math.PI / 4 : (5 * Math.PI) / 4;
-    const startAngle2 = this.swingDir * -1  === 1 ? Math.PI / 4 : (3 * Math.PI) / 4;
-    const endAngle2 = this.swingDir * -1 === 1 ? -Math.PI / 4 : (5 * Math.PI) / 4;
-
-    ctx.arc(px, py, this.range / 1.5, startAngle, endAngle, this.swingDir === -1);
+    ctx.arc(px, py, this.range, 0, Math.PI * 2); // full circle
+    ctx.fill();
     ctx.stroke();
-    ctx.beginPath();
-    ctx.arc(px, py, this.range / 1.5, startAngle2, endAngle2, this.swingDir === 1);
-    ctx.stroke();
+  
     ctx.restore();
-  }
+  }  
 }
 
 
@@ -601,6 +667,7 @@ export class FrostStaff extends Weapon {
     }
   }
 }
+
 
 
 export class LavaEruption extends Weapon {

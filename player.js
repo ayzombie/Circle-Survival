@@ -13,6 +13,7 @@ export class Player {
     this.level = 0;
     this.xp = 0;
     this.requirement = 1;
+    this.xpMulti = 1;
     this.spinach = 0;
     this.magnetLevel = 0;
     this.inventory = [];
@@ -115,7 +116,7 @@ export class Player {
       if (dist < drop.radius + Math.max(this.width, this.height)/2) { //collected!
         console.log(`Picked up a ${drop.type}!`);
         if (drop.type == "emerald") {
-          this.xp += 1;
+          this.xp += 1 * this.xpMulti;
         }
         drops.splice(i, 1);
       }
