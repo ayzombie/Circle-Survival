@@ -4,6 +4,9 @@ body {
     overflow-x: hidden;
     overflow-y: hidden;
 }
+canvas {
+    background-color: white;
+}
 .button {
     background-color: #4CAF50; /* green base */
     color: blue;
@@ -58,10 +61,21 @@ body {
 
 .damage-number {
     position: absolute;
-    color: yellow;
+    color: orange;
     font-weight: bold;
     font-size: 18px;
     text-shadow: 0 0 6px black;
+    pointer-events: none;
+    transition: opacity 1s ease-out, transform 1s ease-out;
+    z-index: 1000;
+}
+
+.heal-number {
+    position: absolute;
+    color: lime;
+    font-weight: bold;
+    font-size: 25px;
+    text-shadow: 0 0 6px green;
     pointer-events: none;
     transition: opacity 1s ease-out, transform 1s ease-out;
     z-index: 1000;

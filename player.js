@@ -4,6 +4,7 @@ export class Player {
     this.y = y;
     this.width = 40;
     this.height = 40;
+    this.dir = 1;
     this.speed = 5;
     this.health = 1000;
     this.alive = true;
@@ -15,6 +16,9 @@ export class Player {
     this.requirement = 1;
     this.xpMulti = 1;
     this.spinach = 0;
+    this.dmgMulti = 1;
+    this.lifeSteal = 0;
+    this.hasVampireCloak = false;
     this.magnetLevel = 0;
     this.inventory = [];
 
@@ -33,8 +37,14 @@ export class Player {
     if (this.alive == false) return;
     if (this.keys.w) this.y -= this.speed;
     if (this.keys.s) this.y += this.speed;
-    if (this.keys.a) this.x -= this.speed;
-    if (this.keys.d) this.x += this.speed;
+    if (this.keys.a) {
+      this.dir = -1;
+      this.x -= this.speed;
+    }
+    if (this.keys.d) {
+      this.dir = 1;
+      this.x += this.speed;
+    }
   
     // clamp to keep player inside canvas
     this.x = Math.max(0, Math.min(this.x, canvas.width - this.width));
@@ -42,9 +52,46 @@ export class Player {
   }
 
   draw(ctx) {
+    ctx.save();               // save canvas state
+    ctx.translate(this.x, this.y);
+    ctx.scale(this.dir, 1);   // flip horizontally if dir = -1
+  
+    // Draw cloak relative to player center
+    ctx.fillStyle = "black";
+    ctx.beginPath();
+  
+    // Top of cloak (anchored behind player)
+    ctx.moveTo(-15, -15);
+    ctx.lineTo(this.width - 15, -15);
+  
+    const bottomY = this.height + 15;
+  
+    // Right side curve
+    ctx.quadraticCurveTo(
+      this.width + 10,
+      this.height,
+      0,
+      bottomY
+    );
+  
+    // Left side curve
+    ctx.quadraticCurveTo(
+      -this.width - 10,
+      this.height,
+      -15,
+      -15
+    );
+  
+    ctx.closePath();
+    ctx.fill();
+  
+    // Draw player body AFTER cloak
     ctx.fillStyle = "blue";
-    ctx.fillRect(this.x - 15, this.y - 15, this.width, this.height);
-  }
+    ctx.fillRect(-15, -15, this.width, this.height);
+  
+    ctx.restore(); // restore canvas so only the player is flipped
+  }   
+  
 
   showStats(ctx, canvas) {
     // === Health Text ===
@@ -100,7 +147,7 @@ export class Player {
       const dy = enemy.y - closestY;
   
       if (Math.hypot(dx, dy) < enemy.radius) {
-        this.takeDamage(2);
+        this.takeDamage(enemy.strength);
       }
     }
     this.checkPickup(drops)
@@ -118,25 +165,63 @@ export class Player {
         if (drop.type == "emerald") {
           this.xp += 1 * this.xpMulti;
         }
+        if (drop.type == "ruby") {
+          this.xp += 3 * this.xpMulti * this.level;
+        }
         drops.splice(i, 1);
       }
     }
     if (this.xp >= this.requirement) {
       this.previousLevel += 1;
       this.xp = this.xp - this.requirement;
-      this.requirement *= 1.5 - (this.level - 1) * 0.02;
+      if (this.level < 20) {
+        this.requirement *= 1.5 - (this.level - 1) * 0.02;
+      }
+      else if (this.level <= 40) {
+        this.requirement *= 1.5 - (this.level - 1) * 0.03;
+      }
+      else {
+        this.requirement *= 1.5 - (this.level - 1) * 0.04;
+      }
+      if (this.requirement <= 1) {
+        this.requirement *= 1.01;
+      }
     }
   }
   
   takeDamage(amount) {
     const now = Date.now()
     if (now - this.lastHitTime < 300) return;
-    this.health -= amount;
+    this.health -= Math.ceil(amount);
     this.lastHitTime = Date.now()
 
     if (this.health <= 0) {
       this.health = 0;
       this.alive = false;
     }
+    this.heal(Math.floor(this.lifeSteal), this);
+  }
+
+  heal(amount, enemy) {
+    this.health += amount;
+    this.showHealNumber(amount, enemy);
+  }
+
+  showHealNumber(amount, enemy) {
+    if (amount <= 0) return;
+    const healText = document.createElement("div");
+    healText.className = "heal-number";
+    healText.textContent = Math.floor(amount);
+
+    healText.style.left = `${enemy.x}px`;
+    healText.style.top = `${enemy.y}px`;
+    document.body.appendChild(healText);
+
+    setTimeout(() => {
+        healText.style.opacity = "0";
+        healText.style.transform = "translateY(-30px)";
+    }, 50);
+
+    setTimeout(() => healText.remove(), 1000);
   }
 }

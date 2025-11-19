@@ -3,6 +3,8 @@ import { MagicMissile } from "./projectile.js";
 import { FireBall } from "./projectile.js";
 import { SnowBall } from "./projectile.js";
 import { OrbitSword } from "./projectile.js";
+import { BloodDagger } from "./projectile.js";
+import { HomingBloodDagger } from "./projectile.js";
 
 export class Weapon {
   constructor(player) {
@@ -61,6 +63,21 @@ export class Weapon {
             this.createExplosionEffect(enemy.x - 20, enemy.y - 50, projectile.area);
           }
         }
+        if (projectile instanceof BloodDagger) {
+          if (Math.random() < projectile.lifeStealChance) {
+            this.player.heal(projectile.lifeSteal, enemy);
+          }
+          return true;
+        }
+        if (projectile instanceof HomingBloodDagger) {
+          projectile.curHits += 1;
+          projectile.target = null;
+          if (Math.random() < projectile.lifeStealChance) {
+            this.player.heal(projectile.lifeSteal, enemy);
+          }
+          return true;
+        }
+
         if (projectile) {
           projectile.alive = false;
         }
@@ -89,6 +106,10 @@ export class Weapon {
     }, 20);
     setTimeout(() => explosion.remove(), 500);
   }
+
+  clearProjectiles() {
+    this.projectiles.length = 0;
+  }  
 }
 
 
@@ -372,9 +393,6 @@ export class HolyWand extends Weapon {
           proj.bounces--;
           if (proj.bounces < 0) proj.alive = false;
 
-          // Deal damage
-          enemy.takeDamage?.(this.damage);
-
           break;
         }
       }
@@ -556,8 +574,8 @@ export class ShockWave extends Weapon {
   draw(ctx) {
     if (!this.swinging) return;
   
-    const px = this.player.x + this.player.width / 2 - 13;
-    const py = this.player.y + this.player.height / 2 - 13  ; 
+    const px = this.player.x + this.player.width / 2 - 14;
+    const py = this.player.y + this.player.height / 2 - 14;
   
     ctx.save();
     ctx.fillStyle = "rgba(255, 165, 0, 0.3)"; // semi-transparent orange
@@ -788,53 +806,164 @@ export class LavaEruption extends Weapon {
 }
 
 
-
-class LifeSteal {
-  constructor(x, y, dirX, dirY, speed, damage, lifesteal, range) {
-    this.x = x;
-    this.y = y;
-    this.dirX = dirX;
-    this.dirY = dirY;
-    this.speed = speed;
-    this.damage = damage;
-    this.lifesteal = lifesteal;
-    this.range = range;
-    this.travel = 0;
-    this.alive = true;
-    this.radius = 6;
+//evolve itself
+export class VampireFang extends Weapon {
+  constructor(player) {
+    super(player);
+    this.cooldown = 1800;
+    this.lastShot = Date.now();
+    this.damage = 4;
+    this.lifeSteal = 1;
+    this.lifeStealChance = 0.1;
+    this.speed = 4;
+    this.lifeTime = 40;
+    this.amount = 1;
+    this.size = 1;
+    this.level = 1;
   }
+  
+  update(deltaTime, enemies) {
+    if (this.level == 2) {
+      this.damage = 5;
+      this.lifeStealChance = 0.25;
+    }
+    if (this.level == 3) {
+      this.damage = 10;
+      this.speed = 5;
+      this.size = 1.4;
+    }
+    if (this.level == 4) {
+      this.cooldown = 1500;
+      this.amount = 2;
+    }
+    if (this.level == 5) {
+      this.damage = 12;
+      this.lifeTime = 60;
+      this.lifeStealChance = 0.35;
+    }
+    if (this.level == 6) {
+      this.lifeSteal = 2;
+      this.speed = 5.5;
+      this.cooldown = 1300;
+    }
+    if (this.level == 7) {
+      this.speed = 6;
+      this.damage = 15;
+      this.lifeTime = 80;
+    }
+    if (this.level == 8) {
+      this.damage = 25;
+      this.lifeStealChance = 0.4;
+      this.speed = 8;
+      this.size = 3;
+    }
+    if (this.level == 9) {
+      this.amount = 3;
+      this.cooldown = 1100;
+      this.lifeTime = 125;
+    }
 
-  update(deltaTime, enemies, player, canvasWidth, canvasHeight) {
-    if (!this.alive) return;
+    super.update(deltaTime, enemies);
 
-    const dx = this.dirX * this.speed;
-    const dy = this.dirY * this.speed;
-    this.x += dx;
-    this.y += dy;
-    this.travel += Math.hypot(dx, dy);
+    // 2️⃣ Handle shooting
+    if (Date.now() - this.lastShot > this.cooldown) {
+      this.lastShot = Date.now();
+      
+      const x = (this.player.x + this.player.width / 2) - 15;
+      const y = (this.player.y + this.player.height / 2) - 15;
 
-    // Kill projectile if out of range
-    if (this.travel > this.range) this.alive = false;
+      for (let i = 0; i < this.amount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dirX = Math.cos(angle);
+        const dirY = Math.sin(angle);
 
-    // Enemy collisions
-    for (const enemy of enemies) {
-      if (!enemy.alive) continue;
-      const dist = Math.hypot(this.x - enemy.x, this.y - enemy.y);
-      if (dist < this.radius + enemy.radius) {
-        enemy.takeDamage?.(this.damage);
-        player.health = Math.min(player.maxHealth, player.health + this.lifesteal);
-        this.alive = false;
-        break;
+        this.projectiles.push(new BloodDagger(x, y, dirX, dirY, this.speed, this.damage, this.lifeTime, this.size, this.lifeSteal, this.lifeStealChance)); 
       }
     }
   }
+}
 
-  draw(ctx) {
-    ctx.save();
-    ctx.fillStyle = "rgba(200, 0, 0, 0.85)";
-    ctx.beginPath();
-    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
+export class BloodLeach extends Weapon {
+  constructor(player) {
+    super(player);
+    this.cooldown = 3000;
+    this.lastShot = Date.now();
+    this.damage = 5;
+    this.lifeSteal = 1;
+    this.lifeStealChance = 0.25;
+    this.speed = 4;
+    this.amount = 1;
+    this.size = 1;
+    this.bounces = 1;
+    this.level = 1;
+  }
+  
+  update(deltaTime, enemies) {
+    if (this.level == 2) {
+      this.damage = 10;
+      this.lifeStealChance = 0.35;
+    }
+    if (this.level == 3) {
+      this.damage = 15;
+      this.speed = 5;
+      this.size = 2;
+    }
+    if (this.level == 4) {
+      this.cooldown = 2500;
+      this.amount = 2;
+      this.bounces = 2;
+    }
+    if (this.level == 5) {
+      this.damage = 20;
+      this.lifeStealChance = 0.5;
+    }
+    if (this.level == 6) {
+      this.lifeSteal = 2;
+      this.speed = 5.5;
+      this.cooldown = 2000;
+    }
+    if (this.level == 7) {
+      this.speed = 6;
+      this.damage = 25;
+      this.bounces = 3;
+    }
+    if (this.level == 8) {
+      this.damage = 30;
+      this.lifeStealChance = 0.6;
+      this.speed = 8;
+    }
+    if (this.level == 9) {
+      this.amount = 3;
+      this.size = 3;
+    }
+    if (this.level == 10) {
+      this.cooldown = 1500;
+      this.lifeSteal = 3;
+      this.bounces = 5;
+    }
+
+    super.update(deltaTime, enemies);
+
+    // 2️⃣ Handle shooting
+    if (Date.now() - this.lastShot > this.cooldown) {
+      this.lastShot = Date.now();
+      
+      const x = (this.player.x + this.player.width / 2) - 15;
+      const y = (this.player.y + this.player.height / 2) - 15;
+
+      for (let i = 0; i < this.amount; i++) {
+        this.projectiles.push(new HomingBloodDagger(
+          this.player, 
+          x,
+          y,
+          this.speed, 
+          this.damage,
+          this.bounces,
+          this.size, 
+          this.lifeSteal, 
+          this.lifeStealChance
+        ));
+      }
+    }
   }
 }

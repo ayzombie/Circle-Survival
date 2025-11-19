@@ -1,5 +1,6 @@
 import { Player } from "./player.js";
 import { Enemy } from "./enemy.js";
+import { Boss1 } from "./enemy.js";
 import { Ammo } from "./ammo.js";
 import { MagicWand } from "./weapons.js";
 import { HolyWand } from "./weapons.js";
@@ -8,6 +9,8 @@ import { ShockWave } from "./weapons.js";
 import { FrostStaff } from "./weapons.js";
 import { OrbitBlade } from "./weapons.js";
 import { LavaEruption } from "./weapons.js";
+import { VampireFang } from "./weapons.js";
+import { BloodLeach } from "./weapons.js";
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -17,76 +20,23 @@ const resetBtn = document.getElementById("resetBtn");
 resetBtn.style.display = "flex";
 resetBtn.style.display = "none";
 levelUpMenu.style.display = "flex";
-levelUpMenu.style.display = "none";
-const buymagicWand = document.getElementById("buyMagicWand")
-const upgradeMagicWand = document.getElementById("upgradeMagicWand")
-const upgradeMagicWand2 = document.getElementById("upgradeMagicWand2")
-const upgradeMagicWand3 = document.getElementById("upgradeMagicWand3")
-const upgradeMagicWand4 = document.getElementById("upgradeMagicWand4")
+levelUpMenu.style.display = "none"
+//Unlocked Variables
+let unlockedVampireFang = true;
+let unlockedVampireCloak = false;
+
+
+//#region buttons
+const buyMagicWand = document.getElementById("buyMagicWand");
+const upgradeMagicWand = document.getElementById("upgradeMagicWand");
+const upgradeMagicWand2 = document.getElementById("upgradeMagicWand2");
+const upgradeMagicWand3 = document.getElementById("upgradeMagicWand3");
+const upgradeMagicWand4 = document.getElementById("upgradeMagicWand4");
 const upgradeMagicWand5 = document.getElementById("upgradeMagicWand5");
 const upgradeMagicWand6 = document.getElementById("upgradeMagicWand6");
 const upgradeMagicWand7 = document.getElementById("upgradeMagicWand7");
 const upgradeMagicWand8 = document.getElementById("upgradeMagicWand8");
-const buyshockWave = document.getElementById("buyshockWave");
-const upgradeshockWave1 = document.getElementById("upgradeshockWave1");
-const upgradeshockWave2 = document.getElementById("upgradeshockWave2");
-const upgradeshockWave3 = document.getElementById("upgradeshockWave3");
-const upgradeshockWave4 = document.getElementById("upgradeshockWave4");
-const upgradeshockWave5 = document.getElementById("upgradeshockWave5");
-const upgradeshockWave6 = document.getElementById("upgradeshockWave6");
-const upgradeshockWave7 = document.getElementById("upgradeshockWave7");
-const upgradeshockWave8 = document.getElementById("upgradeshockWave8");
-const buyFireWand = document.getElementById("buyFireWand");
-const upgradeFireWand1 = document.getElementById("upgradeFireWand1");
-const upgradeFireWand2 = document.getElementById("upgradeFireWand2");
-const upgradeFireWand3 = document.getElementById("upgradeFireWand3");
-const upgradeFireWand4 = document.getElementById("upgradeFireWand4");
-const upgradeFireWand5 = document.getElementById("upgradeFireWand5");
-const upgradeFireWand6 = document.getElementById("upgradeFireWand6");
-const upgradeFireWand7 = document.getElementById("upgradeFireWand7");
-const upgradeFireWand8 = document.getElementById("upgradeFireWand8");
-const buySpinach = document.getElementById("buySpinach");
-const upgradeSpinach1 = document.getElementById("upgradeSpinach1");
-const upgradeSpinach2 = document.getElementById("upgradeSpinach2");
-const upgradeSpinach3 = document.getElementById("upgradeSpinach3");
-const upgradeSpinach4 = document.getElementById("upgradeSpinach4");
-const buyFrostStaff = document.getElementById("buyFrostStaff");
-const upgradeFrostStaff1 = document.getElementById("upgradeFrostStaff1");
-const upgradeFrostStaff2 = document.getElementById("upgradeFrostStaff2");
-const upgradeFrostStaff3 = document.getElementById("upgradeFrostStaff3");
-const upgradeFrostStaff4 = document.getElementById("upgradeFrostStaff4");
-const upgradeFrostStaff5 = document.getElementById("upgradeFrostStaff5");
-const upgradeFrostStaff6 = document.getElementById("upgradeFrostStaff6");
-const upgradeFrostStaff7 = document.getElementById("upgradeFrostStaff7");
-const upgradeFrostStaff8 = document.getElementById("upgradeFrostStaff8");
-const buyMagnet = document.getElementById("buyMagnet");
-const upgradeMagnet1 = document.getElementById("upgradeMagnet1");
-const upgradeMagnet2 = document.getElementById("upgradeMagnet2");
-const upgradeMagnet3 = document.getElementById("upgradeMagnet3");
-const upgradeMagnet4 = document.getElementById("upgradeMagnet4");
-const buyOrbitBlade = document.getElementById("buyOrbitBlade");
-const upgradeOrbitBlade1 = document.getElementById("upgradeOrbitBlade1");
-const upgradeOrbitBlade2 = document.getElementById("upgradeOrbitBlade2");
-const upgradeOrbitBlade3 = document.getElementById("upgradeOrbitBlade3");
-const upgradeOrbitBlade4 = document.getElementById("upgradeOrbitBlade4");
-const upgradeOrbitBlade5 = document.getElementById("upgradeOrbitBlade5");
-const upgradeOrbitBlade6 = document.getElementById("upgradeOrbitBlade6");
-const upgradeOrbitBlade7 = document.getElementById("upgradeOrbitBlade7");
-const upgradeOrbitBlade8 = document.getElementById("upgradeOrbitBlade8");
-const buyLavaEruption = document.getElementById("buyLavaEruption");
-const upgradeLavaEruption1 = document.getElementById("upgradeLavaEruption1");
-const upgradeLavaEruption2 = document.getElementById("upgradeLavaEruption2");
-const upgradeLavaEruption3 = document.getElementById("upgradeLavaEruption3");
-const upgradeLavaEruption4 = document.getElementById("upgradeLavaEruption4");
-const upgradeLavaEruption5 = document.getElementById("upgradeLavaEruption5");
-const upgradeLavaEruption6 = document.getElementById("upgradeLavaEruption6");
-const upgradeLavaEruption7 = document.getElementById("upgradeLavaEruption7");
-const upgradeLavaEruption8 = document.getElementById("upgradeLavaEruption8");
-const buyXpMulti = document.getElementById("buyXpMulti");
-const upgradeXpMulti1 = document.getElementById("upgradeXpMulti1");
-const upgradeXpMulti2 = document.getElementById("upgradeXpMulti2");
-const upgradeXpMulti3 = document.getElementById("upgradeXpMulti3");
-const upgradeXpMulti4 = document.getElementById("upgradeXpMulti4");
+// === Holy Wand ===
 const buyHolyWand = document.getElementById("buyHolyWand");
 const upgradeHolyWand1 = document.getElementById("upgradeHolyWand1");
 const upgradeHolyWand2 = document.getElementById("upgradeHolyWand2");
@@ -97,13 +47,99 @@ const upgradeHolyWand6 = document.getElementById("upgradeHolyWand6");
 const upgradeHolyWand7 = document.getElementById("upgradeHolyWand7");
 const upgradeHolyWand8 = document.getElementById("upgradeHolyWand8");
 const upgradeHolyWand9 = document.getElementById("upgradeHolyWand9");
+// === Fire Wand ===
+const buyFireWand = document.getElementById("buyFireWand");
+const upgradeFireWand1 = document.getElementById("upgradeFireWand1");
+const upgradeFireWand2 = document.getElementById("upgradeFireWand2");
+const upgradeFireWand3 = document.getElementById("upgradeFireWand3");
+const upgradeFireWand4 = document.getElementById("upgradeFireWand4");
+const upgradeFireWand5 = document.getElementById("upgradeFireWand5");
+const upgradeFireWand6 = document.getElementById("upgradeFireWand6");
+const upgradeFireWand7 = document.getElementById("upgradeFireWand7");
+const upgradeFireWand8 = document.getElementById("upgradeFireWand8");
+// === Shock Wave ==
+const buyShockWave = document.getElementById("buyShockWave");
+const upgradeShockWave1 = document.getElementById("upgradeShockWave1");
+const upgradeShockWave2 = document.getElementById("upgradeShockWave2");
+const upgradeShockWave3 = document.getElementById("upgradeShockWave3");
+const upgradeShockWave4 = document.getElementById("upgradeShockWave4");
+const upgradeShockWave5 = document.getElementById("upgradeShockWave5");
+const upgradeShockWave6 = document.getElementById("upgradeShockWave6");
+const upgradeShockWave7 = document.getElementById("upgradeShockWave7");
+const upgradeShockWave8 = document.getElementById("upgradeShockWave8");
+// === Frost Staff ===
+const buyFrostStaff = document.getElementById("buyFrostStaff");
+const upgradeFrostStaff1 = document.getElementById("upgradeFrostStaff1");
+const upgradeFrostStaff2 = document.getElementById("upgradeFrostStaff2");
+const upgradeFrostStaff3 = document.getElementById("upgradeFrostStaff3");
+const upgradeFrostStaff4 = document.getElementById("upgradeFrostStaff4");
+const upgradeFrostStaff5 = document.getElementById("upgradeFrostStaff5");
+const upgradeFrostStaff6 = document.getElementById("upgradeFrostStaff6");
+const upgradeFrostStaff7 = document.getElementById("upgradeFrostStaff7");
+const upgradeFrostStaff8 = document.getElementById("upgradeFrostStaff8");
+// === Orbit Blade ===
+const buyOrbitBlade = document.getElementById("buyOrbitBlade");
+const upgradeOrbitBlade1 = document.getElementById("upgradeOrbitBlade1");
+const upgradeOrbitBlade2 = document.getElementById("upgradeOrbitBlade2");
+const upgradeOrbitBlade3 = document.getElementById("upgradeOrbitBlade3");
+const upgradeOrbitBlade4 = document.getElementById("upgradeOrbitBlade4");
+const upgradeOrbitBlade5 = document.getElementById("upgradeOrbitBlade5");
+const upgradeOrbitBlade6 = document.getElementById("upgradeOrbitBlade6");
+const upgradeOrbitBlade7 = document.getElementById("upgradeOrbitBlade7");
+const upgradeOrbitBlade8 = document.getElementById("upgradeOrbitBlade8");
+// === Lava Eruption ===
+const buyLavaEruption = document.getElementById("buyLavaEruption");
+const upgradeLavaEruption1 = document.getElementById("upgradeLavaEruption1");
+const upgradeLavaEruption2 = document.getElementById("upgradeLavaEruption2");
+const upgradeLavaEruption3 = document.getElementById("upgradeLavaEruption3");
+const upgradeLavaEruption4 = document.getElementById("upgradeLavaEruption4");
+const upgradeLavaEruption5 = document.getElementById("upgradeLavaEruption5");
+const upgradeLavaEruption6 = document.getElementById("upgradeLavaEruption6");
+const upgradeLavaEruption7 = document.getElementById("upgradeLavaEruption7");
+const upgradeLavaEruption8 = document.getElementById("upgradeLavaEruption8");
+// === Vampire's Fang ===
+const buyVampireFang = document.getElementById("buyVampireFang");
+const upgradeVampireFang1 = document.getElementById("upgradeVampireFang1");
+const upgradeVampireFang2 = document.getElementById("upgradeVampireFang2");
+const upgradeVampireFang3 = document.getElementById("upgradeVampireFang3");
+const upgradeVampireFang4 = document.getElementById("upgradeVampireFang4");
+const upgradeVampireFang5 = document.getElementById("upgradeVampireFang5");
+const upgradeVampireFang6 = document.getElementById("upgradeVampireFang6");
+const upgradeVampireFang7 = document.getElementById("upgradeVampireFang7");
+const upgradeVampireFang8 = document.getElementById("upgradeVampireFang8");
+// === Spinach ===
+const buySpinach = document.getElementById("buySpinach");
+const upgradeSpinach1 = document.getElementById("upgradeSpinach1");
+const upgradeSpinach2 = document.getElementById("upgradeSpinach2");
+const upgradeSpinach3 = document.getElementById("upgradeSpinach3");
+const upgradeSpinach4 = document.getElementById("upgradeSpinach4");
+// === Magnet ===
+const buyMagnet = document.getElementById("buyMagnet");
+const upgradeMagnet1 = document.getElementById("upgradeMagnet1");
+const upgradeMagnet2 = document.getElementById("upgradeMagnet2");
+const upgradeMagnet3 = document.getElementById("upgradeMagnet3");
+const upgradeMagnet4 = document.getElementById("upgradeMagnet4");
+// === XP Multiplier ===
+const buyXpMulti = document.getElementById("buyXpMulti");
+const upgradeXpMulti1 = document.getElementById("upgradeXpMulti1");
+const upgradeXpMulti2 = document.getElementById("upgradeXpMulti2");
+const upgradeXpMulti3 = document.getElementById("upgradeXpMulti3");
+const upgradeXpMulti4 = document.getElementById("upgradeXpMulti4");
+// === Blood Leach ===
+const buyBloodLeach = document.getElementById("buyBloodLeach");
+const upgradeBloodLeach1 = document.getElementById("upgradeBloodLeach1");
+const upgradeBloodLeach2 = document.getElementById("upgradeBloodLeach2");
+const upgradeBloodLeach3 = document.getElementById("upgradeBloodLeach3");
+const upgradeBloodLeach4 = document.getElementById("upgradeBloodLeach4");
+const upgradeBloodLeach5 = document.getElementById("upgradeBloodLeach5");
+const upgradeBloodLeach6 = document.getElementById("upgradeBloodLeach6");
+const upgradeBloodLeach7 = document.getElementById("upgradeBloodLeach7");
+const upgradeBloodLeach8 = document.getElementById("upgradeBloodLeach8");
+const upgradeBloodLeach9 = document.getElementById("upgradeBloodLeach9");
+//#endregion
 
-
-
-
-
-let buttons = [ 
-    buymagicWand,
+let buttons = [
+    buyMagicWand,
     upgradeMagicWand,
     upgradeMagicWand2,
     upgradeMagicWand3,
@@ -112,6 +148,16 @@ let buttons = [
     upgradeMagicWand6,
     upgradeMagicWand7,
     upgradeMagicWand8,
+    buyHolyWand,
+    upgradeHolyWand1,
+    upgradeHolyWand2,
+    upgradeHolyWand3,
+    upgradeHolyWand4,
+    upgradeHolyWand5,
+    upgradeHolyWand6,
+    upgradeHolyWand7,
+    upgradeHolyWand8,
+    upgradeHolyWand9,
     buyFireWand,
     upgradeFireWand1,
     upgradeFireWand2,
@@ -121,20 +167,15 @@ let buttons = [
     upgradeFireWand6,
     upgradeFireWand7,
     upgradeFireWand8,
-    buyshockWave,
-    upgradeshockWave1,
-    upgradeshockWave2,
-    upgradeshockWave3,
-    upgradeshockWave4,
-    upgradeshockWave5,
-    upgradeshockWave6,
-    upgradeshockWave7,
-    upgradeshockWave8,
-    buySpinach,
-    upgradeSpinach1,
-    upgradeSpinach2,
-    upgradeSpinach3,
-    upgradeSpinach4,
+    buyShockWave,
+    upgradeShockWave1,
+    upgradeShockWave2,
+    upgradeShockWave3,
+    upgradeShockWave4,
+    upgradeShockWave5,
+    upgradeShockWave6,
+    upgradeShockWave7,
+    upgradeShockWave8,
     buyFrostStaff,
     upgradeFrostStaff1,
     upgradeFrostStaff2,
@@ -144,11 +185,6 @@ let buttons = [
     upgradeFrostStaff6,
     upgradeFrostStaff7,
     upgradeFrostStaff8,
-    buyMagnet,
-    upgradeMagnet1,
-    upgradeMagnet2,
-    upgradeMagnet3,
-    upgradeMagnet4,
     buyOrbitBlade,
     upgradeOrbitBlade1,
     upgradeOrbitBlade2,
@@ -167,38 +203,41 @@ let buttons = [
     upgradeLavaEruption6,
     upgradeLavaEruption7,
     upgradeLavaEruption8,
+    buyVampireFang,
+    upgradeVampireFang1,
+    upgradeVampireFang2,
+    upgradeVampireFang3,
+    upgradeVampireFang4,
+    upgradeVampireFang5,
+    upgradeVampireFang6,
+    upgradeVampireFang7,
+    upgradeVampireFang8,
+    buySpinach,
+    upgradeSpinach1,
+    upgradeSpinach2,
+    upgradeSpinach3,
+    upgradeSpinach4,
+    buyMagnet,
+    upgradeMagnet1,
+    upgradeMagnet2,
+    upgradeMagnet3,
+    upgradeMagnet4,
     buyXpMulti,
     upgradeXpMulti1,
     upgradeXpMulti2,
     upgradeXpMulti3,
     upgradeXpMulti4,
-    buyHolyWand,
-    upgradeHolyWand1,
-    upgradeHolyWand2,
-    upgradeHolyWand3,
-    upgradeHolyWand4,
-    upgradeHolyWand5,
-    upgradeHolyWand6,
-    upgradeHolyWand7,
-    upgradeHolyWand8,
-    upgradeHolyWand9
-];
-buttons.forEach(btn => btn.style.display = "none");
-
-const enemies = [];
-const ammos = [];
-const drops = [];
-const new_weapons = [];
-const upgrades = [];
-let paused = false;
-let pausedGame = false;
-let lastTime = 0;
-let difCounter = 0.01;
-let difficulty = 0.00005; //originally 0.00005
-let enemyHealth = 5;
-let timer = 0;
-let alpha = 0;
-let lastPlayerHealth = player.health;
+    buyBloodLeach,
+    upgradeBloodLeach1,
+    upgradeBloodLeach2,
+    upgradeBloodLeach3,
+    upgradeBloodLeach4,
+    upgradeBloodLeach5,
+    upgradeBloodLeach6,
+    upgradeBloodLeach7,
+    upgradeBloodLeach8,
+    upgradeBloodLeach9
+]; 
 
 function loadButtons() {
     resetBtn.addEventListener("click", () => {
@@ -206,10 +245,10 @@ function loadButtons() {
         window.location.reload(true);
     });
     
-    buymagicWand.addEventListener("click", () => {
+    buyMagicWand.addEventListener("click", () => {
         player.inventory.push(new MagicWand(player));
         console.log("Bought Magic Wand!");
-        buttons = buttons.filter(b => b !== buymagicWand);
+        buttons = buttons.filter(b => b !== buyMagicWand);
         buttons.push(upgradeMagicWand);
     });
 
@@ -284,83 +323,83 @@ function loadButtons() {
         wand.level = 9;
     });
 
-    buyshockWave.addEventListener("click", () => {
+    buyShockWave.addEventListener("click", () => {
         // Handle buying the shockWave weapon
         console.log("Bought shockWave!");
-        buttons = buttons.filter(b => b !== buyshockWave);
-        buttons.push(upgradeshockWave1);
+        buttons = buttons.filter(b => b !== buyShockWave);
+        buttons.push(upgradeShockWave1);
         if (!player.inventory.some(w => w instanceof ShockWave)) {
             player.inventory.push(new ShockWave(player));
         }
     });
 
-    upgradeshockWave1.addEventListener("click", () => {
+    upgradeShockWave1.addEventListener("click", () => {
         // Upgrade shockWave to level 2
         console.log("Upgraded shockWave to Level 2!");
-        buttons = buttons.filter(b => b !== upgradeshockWave1);
-        buttons.push(upgradeshockWave2);
+        buttons = buttons.filter(b => b !== upgradeShockWave1);
+        buttons.push(upgradeShockWave2);
         const shockWave = player.inventory.find(w => w instanceof ShockWave);
         if (shockWave) shockWave.level = 2;
     });
 
-    upgradeshockWave2.addEventListener("click", () => {
+    upgradeShockWave2.addEventListener("click", () => {
         // Upgrade shockWave to level 3
         console.log("Upgraded shockWave to Level 3!");
-        buttons = buttons.filter(b => b !== upgradeshockWave2);
-        buttons.push(upgradeshockWave3);
+        buttons = buttons.filter(b => b !== upgradeShockWave2);
+        buttons.push(upgradeShockWave3);
         const shockWave = player.inventory.find(w => w instanceof ShockWave);
         if (shockWave) shockWave.level = 3;
     });
 
-    upgradeshockWave3.addEventListener("click", () => {
+    upgradeShockWave3.addEventListener("click", () => {
         // Upgrade shockWave to level 4
         console.log("Upgraded shockWave to Level 4!");
-        buttons = buttons.filter(b => b !== upgradeshockWave3);
-        buttons.push(upgradeshockWave4);
+        buttons = buttons.filter(b => b !== upgradeShockWave3);
+        buttons.push(upgradeShockWave4);
         const shockWave = player.inventory.find(w => w instanceof ShockWave);
         if (shockWave) shockWave.level = 4;
     });
 
-    upgradeshockWave4.addEventListener("click", () => {
+    upgradeShockWave4.addEventListener("click", () => {
         // Upgrade shockWave to level 5
         console.log("Upgraded shockWave to Level 5!");
-        buttons = buttons.filter(b => b !== upgradeshockWave4);
-        buttons.push(upgradeshockWave5);
+        buttons = buttons.filter(b => b !== upgradeShockWave4);
+        buttons.push(upgradeShockWave5);
         const shockWave = player.inventory.find(w => w instanceof ShockWave);
         if (shockWave) shockWave.level = 5;
     });
 
-    upgradeshockWave5.addEventListener("click", () => {
+    upgradeShockWave5.addEventListener("click", () => {
         // Upgrade shockWave to level 6
         console.log("Upgraded shockWave to Level 6!");
-        buttons = buttons.filter(b => b !== upgradeshockWave5);
-        buttons.push(upgradeshockWave6);
+        buttons = buttons.filter(b => b !== upgradeShockWave5);
+        buttons.push(upgradeShockWave6);
         const shockWave = player.inventory.find(w => w instanceof ShockWave);
         if (shockWave) shockWave.level = 6;
     });
     
-    upgradeshockWave6.addEventListener("click", () => {
+    upgradeShockWave6.addEventListener("click", () => {
         // Upgrade shockWave to level 7
         console.log("Upgraded shockWave to Level 7!");
-        buttons = buttons.filter(b => b !== upgradeshockWave6);
-        buttons.push(upgradeshockWave7);
+        buttons = buttons.filter(b => b !== upgradeShockWave6);
+        buttons.push(upgradeShockWave7);
         const shockWave = player.inventory.find(w => w instanceof ShockWave);
         if (shockWave) shockWave.level = 7;
     });
 
-    upgradeshockWave7.addEventListener("click", () => {
+    upgradeShockWave7.addEventListener("click", () => {
         // Upgrade shockWave to level 8
         console.log("Upgraded shockWave to Level 8!");
-        buttons = buttons.filter(b => b !== upgradeshockWave7);
-        buttons.push(upgradeshockWave8);
+        buttons = buttons.filter(b => b !== upgradeShockWave7);
+        buttons.push(upgradeShockWave8);
         const shockWave = player.inventory.find(w => w instanceof ShockWave);
         if (shockWave) shockWave.level = 8;
     });
 
-    upgradeshockWave8.addEventListener("click", () => {
+    upgradeShockWave8.addEventListener("click", () => {
         // Upgrade shockWave to level 9 (max)
         console.log("Upgraded shockWave to Level 9 (Max)!");
-        buttons = buttons.filter(b => b !== upgradeshockWave8);
+        buttons = buttons.filter(b => b !== upgradeShockWave8);
         // No further upgrades
         const shockWave = player.inventory.find(w => w instanceof ShockWave);
         if (shockWave) shockWave.level = 9;
@@ -666,7 +705,7 @@ function loadButtons() {
         const blade = player.inventory.find(w => w.constructor && w.constructor.name === "OrbitBlade");
         if (blade) blade.level = 9;
     });
-
+    
     buyLavaEruption.addEventListener("click", () => {
         player.inventory.push(new LavaEruption(player));
         console.log("Bought Lava Eruption!");
@@ -861,11 +900,163 @@ function loadButtons() {
         buttons = buttons.filter(b => b !== upgradeHolyWand9);
         // No further upgrades
     });
+
+    buyVampireFang.addEventListener("click", () => {
+        player.inventory.push(new VampireFang(player));
+        console.log("Bought Vampire Fang!");
+        buttons = buttons.filter(b => b !== buyVampireFang);
+        buttons.push(upgradeVampireFang1);
+    });
+    
+    upgradeVampireFang1.addEventListener("click", () => {
+        const fang = player.inventory.find(w => w.constructor && w.constructor.name === "VampireFang");
+        if (fang) fang.level = 2;
+        console.log("Upgraded Vampire Fang to Level 2!");
+        buttons = buttons.filter(b => b !== upgradeVampireFang1);
+        buttons.push(upgradeVampireFang2);
+    });
+    
+    upgradeVampireFang2.addEventListener("click", () => {
+        const fang = player.inventory.find(w => w.constructor && w.constructor.name === "VampireFang");
+        if (fang) fang.level = 3;
+        console.log("Upgraded Vampire Fang to Level 3!");
+        buttons = buttons.filter(b => b !== upgradeVampireFang2);
+        buttons.push(upgradeVampireFang3);
+    });
+    
+    upgradeVampireFang3.addEventListener("click", () => {
+        const fang = player.inventory.find(w => w.constructor && w.constructor.name === "VampireFang");
+        if (fang) fang.level = 4;
+        console.log("Upgraded Vampire Fang to Level 4!");
+        buttons = buttons.filter(b => b !== upgradeVampireFang3);
+        buttons.push(upgradeVampireFang4);
+    });
+    
+    upgradeVampireFang4.addEventListener("click", () => {
+        const fang = player.inventory.find(w => w.constructor && w.constructor.name === "VampireFang");
+        if (fang) fang.level = 5;
+        console.log("Upgraded Vampire Fang to Level 5!");
+        buttons = buttons.filter(b => b !== upgradeVampireFang4);
+        buttons.push(upgradeVampireFang5);
+    });
+    
+    upgradeVampireFang5.addEventListener("click", () => {
+        const fang = player.inventory.find(w => w.constructor && w.constructor.name === "VampireFang");
+        if (fang) fang.level = 6;
+        console.log("Upgraded Vampire Fang to Level 6!");
+        buttons = buttons.filter(b => b !== upgradeVampireFang5);
+        buttons.push(upgradeVampireFang6);
+    });
+    
+    upgradeVampireFang6.addEventListener("click", () => {
+        const fang = player.inventory.find(w => w.constructor && w.constructor.name === "VampireFang");
+        if (fang) fang.level = 7;
+        console.log("Upgraded Vampire Fang to Level 7!");
+        buttons = buttons.filter(b => b !== upgradeVampireFang6);
+        buttons.push(upgradeVampireFang7);
+    });
+    
+    upgradeVampireFang7.addEventListener("click", () => {
+        const fang = player.inventory.find(w => w.constructor && w.constructor.name === "VampireFang");
+        if (fang) fang.level = 8;
+        console.log("Upgraded Vampire Fang to Level 8!");
+        buttons = buttons.filter(b => b !== upgradeVampireFang7);
+        buttons.push(upgradeVampireFang8);
+    });
+    
+    upgradeVampireFang8.addEventListener("click", () => {
+        const fang = player.inventory.find(w => w.constructor && w.constructor.name === "VampireFang");
+        if (fang) fang.level = 9;
+        console.log("Upgraded Vampire Fang to Level 9! (MAX)");
+        buttons = buttons.filter(b => b !== upgradeVampireFang8);
+    });
+
+    buyBloodLeach.addEventListener("click", () => {
+        if (!player.inventory.some(w => w.constructor && w.constructor.name === "BloodLeach")) {
+            player.inventory.push(new BloodLeach(player));
+            console.log("Bought Blood Leach!");
+            buttons = buttons.filter(b => b !== buyBloodLeach);
+            buttons.push(upgradeBloodLeach1);
+        }
+    });
+
+    upgradeBloodLeach1.addEventListener("click", () => {
+        const leach = player.inventory.find(w => w.constructor && w.constructor.name === "BloodLeach");
+        if (leach) leach.level = 2;
+        console.log("Upgraded Blood Leach to Level 2!");
+        buttons = buttons.filter(b => b !== upgradeBloodLeach1);
+        buttons.push(upgradeBloodLeach2);
+    });
+
+    upgradeBloodLeach2.addEventListener("click", () => {
+        const leach = player.inventory.find(w => w.constructor && w.constructor.name === "BloodLeach");
+        if (leach) leach.level = 3;
+        console.log("Upgraded Blood Leach to Level 3!");
+        buttons = buttons.filter(b => b !== upgradeBloodLeach2);
+        buttons.push(upgradeBloodLeach3);
+    });
+
+    upgradeBloodLeach3.addEventListener("click", () => {
+        const leach = player.inventory.find(w => w.constructor && w.constructor.name === "BloodLeach");
+        if (leach) leach.level = 4;
+        console.log("Upgraded Blood Leach to Level 4!");
+        buttons = buttons.filter(b => b !== upgradeBloodLeach3);
+        buttons.push(upgradeBloodLeach4);
+    });
+
+    upgradeBloodLeach4.addEventListener("click", () => {
+        const leach = player.inventory.find(w => w.constructor && w.constructor.name === "BloodLeach");
+        if (leach) leach.level = 5;
+        console.log("Upgraded Blood Leach to Level 5!");
+        buttons = buttons.filter(b => b !== upgradeBloodLeach4);
+        buttons.push(upgradeBloodLeach5);
+    });
+
+    upgradeBloodLeach5.addEventListener("click", () => {
+        const leach = player.inventory.find(w => w.constructor && w.constructor.name === "BloodLeach");
+        if (leach) leach.level = 6;
+        console.log("Upgraded Blood Leach to Level 6!");
+        buttons = buttons.filter(b => b !== upgradeBloodLeach5);
+        buttons.push(upgradeBloodLeach6);
+    });
+
+    upgradeBloodLeach6.addEventListener("click", () => {
+        const leach = player.inventory.find(w => w.constructor && w.constructor.name === "BloodLeach");
+        if (leach) leach.level = 7;
+        console.log("Upgraded Blood Leach to Level 7!");
+        buttons = buttons.filter(b => b !== upgradeBloodLeach6);
+        buttons.push(upgradeBloodLeach7);
+    });
+
+    upgradeBloodLeach7.addEventListener("click", () => {
+        const leach = player.inventory.find(w => w.constructor && w.constructor.name === "BloodLeach");
+        if (leach) leach.level = 8;
+        console.log("Upgraded Blood Leach to Level 8!");
+        buttons = buttons.filter(b => b !== upgradeBloodLeach7);
+        buttons.push(upgradeBloodLeach8);
+    });
+
+    upgradeBloodLeach8.addEventListener("click", () => {
+        const leach = player.inventory.find(w => w.constructor && w.constructor.name === "BloodLeach");
+        if (leach) leach.level = 9;
+        console.log("Upgraded Blood Leach to Level 9!");
+        buttons = buttons.filter(b => b !== upgradeBloodLeach8);
+        buttons.push(upgradeBloodLeach9);
+    });
+
+    upgradeBloodLeach9.addEventListener("click", () => {
+        const leach = player.inventory.find(w => w.constructor && w.constructor.name === "BloodLeach");
+        if (leach) leach.level = 10;
+        console.log("Upgraded Blood Leach to Level 10! (MAX)");
+        buttons = buttons.filter(b => b !== upgradeBloodLeach9);
+        // No further upgrades, keep as end-point.
+    });
 };
 
-
-
 loadButtons();
+
+
+
 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -873,40 +1064,1459 @@ function resizeCanvas() {
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
+ 
+const enemies = [];
+const ammos = [];
+let drops = [];
+const doors = [];
+const keys = { e: false };
+let showDoors = false;
+let paused = false;
+let pausedGame = false;
+let lastTime = 0;
+let difCounter = 0.01;
+let difficulty = 0.0005; //originally 0.00005
+let timer = 0;
+let alpha = 0;
+let lastPlayerHealth = player.health;
+let level = 0;
+let size = 20;
+let thisLevelWaves = 0;
+let wavesCompleted = 0;
+let thisWaveEnemies = 0;
+let waveComplete = false;
+let levelComplete = false;
+let thisLevelEnemies = 0;
+let enemyCounter = 0;
+let thisLevelHealthMin = 0;
+let thisLevelHealthMax = 0;
+let enemiesRemainingInWave = 0;
+let drawWeapons = true;
+let playerPath = "";
+let thisLevelBosses = 0;
+let waveLabelAlpha = 0;
+let waveLabelText = "";
+let waveLabelTimer = 0;
+let bossLabelAlpha = 0;
+let bossLabelText = "";
+let bossLabelTimer = 0;
+let bossPulse = 0;
+let showInteractPrompt = false;
+let currentDoorInfo = null;
+let doorClosest = null;
+let showCutscene = false;
+let curItem = null;
 
-function spawnEnemies() {
-    // randomly decide which side to spawn on
-    const side = Math.floor(Math.random() * 4); // 0=top,1=right,2=bottom,3=left
-    let x, y;
+// player.inventory.push(new BloodLeach(player));
 
-    switch (side) {
-    case 0: // top
-        x = Math.random() * canvas.width;
-        y = -20; // just above the canvas
-        break;
-    case 1: // right
-        x = canvas.width + 20; // just right of canvas
-        y = Math.random() * canvas.height;
-        break;
-    case 2: // bottom
-        x = Math.random() * canvas.width;
-        y = canvas.height + 20; // just below canvas
-        break;
-    case 3: // left
-        x = -20; // just left of canvas
-        y = Math.random() * canvas.height;
-        break;
+window.addEventListener("keydown", e => {
+    const k = e.key.toLowerCase();
+    if (keys.hasOwnProperty(k)) keys[k] = true;
+});
+window.addEventListener("keyup", e => {
+    const k = e.key.toLowerCase();
+    if (keys.hasOwnProperty(k)) keys[k] = false;
+});
+
+const levels = {
+    start: {
+        id: "start",
+        path: "neutral",
+        waves: 2,
+        enemiesPerWave: 4,
+        enemyHealth: 3,
+        enemyStrength: 1,
+        // unlocks: "VampireFang",
+        next: {
+            up: "blood1",
+            right: "combat1",
+            down: "machinery1",
+            left: "peace1"
+        }
+    },
+    blood1: {
+        id: "blood1",
+        path: "blood",
+        info: "Blood, the power flows through me...",
+        waves: 2,
+        enemiesPerWave: 5,
+        enemyHealth: 5,
+        enemyStrength: 3,
+        // unlocks: "VampireFang",
+        next: { up: "blood2"}
+    },
+    blood2: {
+        id: "blood2",
+        path: "blood",
+        info: "...",
+        waves: 2,
+        enemiesPerWave: 9,
+        enemyHealth: 6,
+        enemyStrength: 3,
+        next: { up: "blood3"}
+    },
+    blood3: {
+        id: "blood3",
+        path: "blood",
+        info: "The army, it's coming...",
+        waves: 3,
+        enemiesPerWave: 12,
+        enemyHealth: 8,
+        enemyStrength: 4,
+        next: { up: "blood4"}
+    },
+    blood4: {
+        id: "blood4",
+        path: "blood",
+        info: "We survived... for now.",
+        waves: 2,
+        enemiesPerWave: 30,
+        enemyHealth: 9,
+        enemyStrength: 5,
+        next: { up: "blood5"}
+    },
+    blood5: {
+        id: "blood5",
+        path: "blood",
+        info: "The power, it's getting stronger.",
+        waves: 3,
+        enemiesPerWave: 15,
+        enemyHealth: 10,
+        enemyStrength: 5,
+        next: { up: "blood6" }
+    },
+    blood6: {
+        id: "blood6",
+        path: "blood",
+        info: "...",
+        waves: 4,
+        enemiesPerWave: 15,
+        enemyHealth: 12,
+        enemyStrength: 6,
+        next: { up: "blood7" }
+    },
+    blood7: {
+        id: "blood7",
+        path: "blood",
+        info: "...",
+        waves: 4,
+        enemiesPerWave: 20,
+        enemyHealth: 13,
+        enemyStrength: 6,
+        next: { up: "blood8" }
+    },
+    blood8: {
+        id: "blood8",
+        path: "blood",
+        info: "They just won't stop!",
+        waves: 4,
+        enemiesPerWave: 20,
+        enemyHealth: 15,
+        enemyStrength: 6.5,
+        next: { up: "blood9" }
+    },
+    blood9: {
+        id: "blood9",
+        path: "blood",
+        info: "I sense danger...",
+        waves: 20,
+        enemiesPerWave: 5,
+        enemyHealth: 16,
+        enemyStrength: 7,
+        next: { up: "blood10" }
+    },
+    blood10: {
+        id: "blood10",
+        path: "blood",
+        info: "The awakening...",
+        waves: 6,
+        bosses: 1,
+        enemiesPerWave: 25,
+        enemyHealth: 20,
+        enemyStrength: 10,
+        // unlocks: "VampireCloak",
+        next: { up: "blood11" }
+    },
+    blood11: {
+        id: "blood11",
+        path: "blood",
+        info: "The forshadow...",
+        waves: 7,
+        enemiesPerWave: 20,
+        enemyHealth: 21,
+        enemyStrength: 7,
+        next: { up: "blood12" }
+    },
+    blood12: {
+        id: "blood12",
+        path: "blood",
+        info: "...",
+        waves: 7,
+        enemiesPerWave: 23,
+        enemyHealth: 23,
+        enemyStrength: 7.5,
+        next: { up: "blood13" }
+    },
+    blood13: {
+        id: "blood13",
+        path: "blood",
+        info: "Their swords are sharper, I grow weaker...",
+        waves: 7,
+        enemiesPerWave: 25,
+        enemyHealth: 25,
+        enemyStrength: 7.5,
+        next: { up: "blood14" }
+    },
+    blood14: {
+        id: "blood14",
+        path: "blood",
+        waves: 7,
+        enemiesPerWave: 27,
+        enemyHealth: 27,
+        enemyStrength: 10,
+        next: { up: "blood15" }
+    },
+    blood15: {
+        id: "blood15",
+        path: "blood",
+        info: "I grow weaker...",
+        waves: 7,
+        bosses: 1,
+        enemiesPerWave: 30,
+        enemyHealth: 28,
+        enemyStrength: 12,
+        next: { up: "blood16" }
+    },
+    blood16: {
+        id: "blood16",
+        path: "blood",
+        info: "I grow weaker and weaker...",
+        waves: 7,
+        enemiesPerWave: 32,
+        enemyHealth: 30,
+        enemyStrength: 15,
+        next: { up: "blood17" }
+    },
+    blood17: {
+        id: "blood17",
+        path: "blood",
+        info: "Recovery...",
+        waves: 8,
+        enemiesPerWave: 32,
+        enemyHealth: 30,
+        enemyStrength: 10,
+        next: { up: "blood18" }
+    },
+    blood18: {
+        id: "blood18",
+        path: "blood",
+        info: "...",
+        waves: 9,
+        enemiesPerWave: 33,
+        enemyHealth: 30,
+        enemyStrength: 9,
+        next: { up: "blood19" }
+    },
+    blood19: {
+        id: "blood19",
+        path: "blood",
+        info: "Blood... I sense blood...",
+        waves: 9,
+        bosses: 1,
+        enemiesPerWave: 34,
+        enemyHealth: 32,
+        enemyStrength: 9.5,
+        next: { up: "blood20" }
+    },
+    blood20: {
+        id: "blood20",
+        path: "blood",
+        info: "...",
+        waves: 10,
+        enemiesPerWave: 35,     //TODO: unlock vampire fang
+        enemyHealth: 33,
+        enemyStrength: 9.4,
+        bosses: 2,
+        // unlocks: "VampireFang",
+        next: { up: "blood21" }
+    },
+    blood21: {
+        id: "blood21",
+        path: "blood",
+        info: "I hunger...",
+        waves: 10,
+        enemiesPerWave: 36,
+        enemyHealth: 34,
+        enemyStrength: 9.6,
+        next: { up: "blood22" }
+    },
+    blood22: {
+        id: "blood22",
+        path: "blood",
+        info: "...",
+        waves: 10,
+        enemiesPerWave: 37,
+        enemyHealth: 35,
+        enemyStrength: 10,
+        next: { up: "blood23" }
+    },
+    blood23: {
+        id: "blood23",
+        path: "blood",
+        info: "They grow stronger... More massive...",
+        waves: 6,
+        bosses: 1,
+        enemiesPerWave: 60,
+        enemyHealth: 30,
+        enemyStrength: 12,
+        next: { up: "blood24" }
+    },
+    blood24: {
+        id: "blood24",
+        path: "blood",
+        info: "The End?",
+        waves: 7,
+        enemiesPerWave: 55,
+        enemyHealth: 35,
+        enemyStrength: 13.5,
+        next: { up: "blood25" }
+    },
+    blood25: {
+        id: "blood25",
+        path: "blood",
+        info: "???",
+        waves: 12,
+        bosses: 4,
+        enemiesPerWave: 30,
+        enemyHealth: 40,
+        enemyStrength: 15,
+        next: {}
+    },
+    combat1: {
+        id: "combat1",
+        path: "combat",
+        info: "Make yourself stronger...",
+        waves: 3,
+        enemiesPerWave: 5,
+        enemyHealth: 5,
+        enemyStrength: 10,
+        unlocks: ["swordUpgrade"],
+        next: { right: "combat2" }
+    },
+    combat2: {
+        id: "combat2",
+        path: "combat",
+        info: "Enemies grow confident.",
+        waves: 3,
+        enemiesPerWave: 6,
+        enemyHealth: 6,
+        enemyStrength: 10.5,
+        next: { right: "combat3" }
+    },
+    combat3: {
+        id: "combat3",
+        path: "combat",
+        info: "...",
+        waves: 4,
+        enemiesPerWave: 7,
+        enemyHealth: 7,
+        enemyStrength: 11,
+        next: { right: "combat4" }
+    },
+    combat4: {
+        id: "combat4",
+        path: "combat",
+        info: "They're starting to coordinate.",
+        waves: 4,
+        enemiesPerWave: 8,
+        enemyHealth: 8,
+        enemyStrength: 11.5,
+        next: { right: "combat5" }
+    },
+    combat5: {
+        id: "combat5",
+        path: "combat",
+        info: "...",
+        waves: 5,
+        enemiesPerWave: 9,
+        enemyHealth: 9,
+        enemyStrength: 12,
+        bosses: 1,
+        next: { right: "combat6" }
+    },
+    combat6: {
+        id: "combat6",
+        path: "combat",
+        info: "Something is happening...",
+        waves: 5,
+        enemiesPerWave: 11,
+        enemyHealth: 11,
+        enemyStrength: 12.5,
+        next: { right: "combat7" }
+    },
+    combat7: {
+        id: "combat7",
+        path: "combat",
+        info: "The Shrapenel",
+        waves: 5,
+        enemiesPerWave: 12,
+        enemyHealth: 12,
+        enemyStrength: 13,
+        next: { right: "combat8" }
+    },
+    combat8: {
+        id: "combat8",
+        path: "combat",
+        info: "Your reflexes are tested.",
+        waves: 6,
+        enemiesPerWave: 13,
+        enemyHealth: 13,
+        enemyStrength: 13.5,
+        next: { right: "combat9" }
+    },
+    combat9: {
+        id: "combat9",
+        path: "combat",
+        info: "Tactics",
+        waves: 6,
+        enemiesPerWave: 15,
+        enemyHealth: 14,
+        enemyStrength: 14,
+        next: { right: "combat10" }
+    },
+    combat10: {
+        id: "combat10",
+        path: "combat",
+        info: "Something is coming...",
+        waves: 7,
+        enemiesPerWave: 16,
+        enemyHealth: 15,
+        enemyStrength: 14.5,
+        bosses: 2,
+        next: { right: "combat11" }
+    },
+    combat11: {
+        id: "combat11",
+        path: "combat",
+        info: "They come in waves.",
+        waves: 7,
+        enemiesPerWave: 18,
+        enemyHealth: 16,
+        enemyStrength: 15,
+        next: { right: "combat12" }
+    },
+    combat12: {
+        id: "combat12",
+        path: "combat",
+        info: "Endurance",
+        waves: 7,
+        enemiesPerWave: 20,
+        enemyHealth: 17,
+        enemyStrength: 15.5,
+        next: { right: "combat13" }
+    },
+    combat13: {
+        id: "combat13",
+        path: "combat",
+        info: "The arena shakes with conflict.",
+        waves: 16,
+        enemiesPerWave: 11,
+        enemyHealth: 18,
+        enemyStrength: 16,
+        next: { right: "combat14" }
+    },
+    combat14: {
+        id: "combat14",
+        path: "combat",
+        info: "They refuse to rest.",
+        waves: 9,
+        enemiesPerWave: 20,
+        enemyHealth: 19,
+        enemyStrength: 16.5,
+        next: { right: "combat15" }
+    },
+    combat15: {
+        id: "combat15",
+        path: "combat",
+        info: "A powerful lieutenant appears soon.",
+        waves: 3,
+        enemiesPerWave: 30,
+        enemyHealth: 45,
+        enemyStrength: 25,
+        bosses: 3,
+        next: { right: "combat16" }
+    },
+    combat16: {
+        id: "combat16",
+        path: "combat",
+        info: "Your strength is undeniable.",
+        waves: 9,
+        enemiesPerWave: 28,
+        enemyHealth: 22,
+        enemyStrength: 18,
+        next: { right: "combat17" }
+    },
+    combat17: {
+        id: "combat17",
+        path: "combat",
+        info: "The air feels heavy…",
+        waves: 9,
+        enemiesPerWave: 30,
+        enemyHealth: 23,
+        enemyStrength: 18,
+        next: { right: "combat18" }
+    },
+    combat18: {
+        id: "combat18",
+        path: "combat",
+        info: "Many fall, but many more rise.",
+        waves: 9,
+        enemiesPerWave: 32,
+        enemyHealth: 25,
+        enemyStrength: 18.5,
+        next: { right: "combat19" }
+    },
+    combat19: {
+        id: "combat19",
+        path: "combat",
+        info: "Only the determined survive.",
+        waves: 10,
+        enemiesPerWave: 35,
+        enemyHealth: 27,
+        enemyStrength: 19,
+        next: { right: "combat20" }
+    },
+    combat20: {
+        id: "combat20",
+        path: "combat",
+        info: "...",
+        waves: 10,
+        enemiesPerWave: 38,
+        enemyHealth: 29,
+        enemyStrength: 20,
+        bosses: 4,
+        next: { right: "combat21" }
+    },
+    combat21: {
+        id: "combat21",
+        path: "combat",
+        info: "A commander watches you.",
+        waves: 10,
+        enemiesPerWave: 40,
+        enemyHealth: 30,
+        enemyStrength: 21,
+        next: { right: "combat22" }
+    },
+    combat22: {
+        id: "combat22",
+        path: "combat",
+        info: "The battlefield grows chaotic.",
+        waves: 11,
+        enemiesPerWave: 42,
+        enemyHealth: 32,
+        enemyStrength: 22,
+        next: { right: "combat23" }
+    },
+    combat23: {
+        id: "combat23",
+        path: "combat",
+        info: "One final push.",
+        waves: 11,
+        enemiesPerWave: 45,
+        enemyHealth: 33,
+        enemyStrength: 23,
+        next: { right: "combat24" }
+    },
+    combat24: {
+        id: "combat24",
+        path: "combat",
+        info: "The enemy prepares their champion.",
+        waves: 12,
+        enemiesPerWave: 48,
+        enemyHealth: 35,
+        enemyStrength: 24,
+        next: { right: "combat25" }
+    },
+    combat25: {
+        id: "combat25",
+        path: "combat",
+        info: "???",
+        waves: 12,
+        enemiesPerWave: 50,
+        enemyHealth: 40,
+        enemyStrength: 25,
+        boss: 5,
+        next: {}
+    },
+    peace1: {
+        id: "peace1",
+        path: "peace",
+        info: "Quiet surrounds you...",
+        waves: 2,
+        enemiesPerWave: 4,
+        enemyHealth: 4,
+        enemyStrength: 1,
+        next: { left: "peace2" }
+    },
+    peace2: {
+        id: "peace2",
+        path: "peace",
+        info: "Gentle spirits appear.",
+        waves: 2,
+        enemiesPerWave: 5,
+        enemyHealth: 5,
+        enemyStrength: 1,
+        next: { left: "peace3" }
+    },
+    peace3: {
+        id: "peace3",
+        path: "peace",
+        info: "...",
+        waves: 3,
+        enemiesPerWave: 6,
+        enemyHealth: 6,
+        enemyStrength: 1.3,
+        next: { left: "peace4" }
+    },
+    peace4: {
+        id: "peace4",
+        path: "peace",
+        info: "Their whispers echo.",
+        waves: 3,
+        enemiesPerWave: 10,
+        enemyHealth: 7,
+        enemyStrength: 1.5,
+        next: { left: "peace5" }
+    },
+    peace5: {
+        id: "peace5",
+        path: "peace",
+        info: "Calm illusions gather.",
+        waves: 4,
+        enemiesPerWave: 15,
+        enemyHealth: 8,
+        enemyStrength: 2,
+        next: { left: "peace6" }
+    },
+    peace6: {
+        id: "peace6",
+        path: "peace",
+        info: "Peace is deceptive...",
+        waves: 4,
+        enemiesPerWave: 9,
+        enemyHealth: 10,
+        enemyStrength: 2.2,
+        next: { left: "peace7" }
+    },
+    peace7: {
+        id: "peace7",
+        path: "peace",
+        info: "...",
+        waves: 4,
+        enemiesPerWave: 10,
+        enemyHealth: 11,
+        enemyStrength: 2.5,
+        next: { left: "peace8" }
+    },
+    peace8: {
+        id: "peace8",
+        path: "peace",
+        info: "Shimmering forms sway.",
+        waves: 4,
+        enemiesPerWave: 12,
+        enemyHealth: 12,
+        enemyStrength: 2.6,
+        next: { left: "peace9" }
+    },
+    peace9: {
+        id: "peace9",
+        path: "peace",
+        info: "Their presence deepens.",
+        waves: 5,
+        enemiesPerWave: 12,
+        enemyHealth: 13,
+        enemyStrength: 2.7,
+        next: { left: "peace10" }
+    },
+    peace10: {
+        id: "peace10",
+        path: "peace",
+        info: "...",
+        waves: 5,
+        enemiesPerWave: 14,
+        enemyHealth: 15,
+        enemyStrength: 3,
+        bosses: 1,
+        next: { left: "peace11" }
+    },
+    peace11: {
+        id: "peace11",
+        path: "peace",
+        info: "Harmony strains…",
+        waves: 5,
+        enemiesPerWave: 14,
+        enemyHealth: 16,
+        enemyStrength: 3,
+        next: { left: "peace12" }
+    },
+    peace12: {
+        id: "peace12",
+        path: "peace",
+        info: "...",
+        waves: 6,
+        enemiesPerWave: 15,
+        enemyHealth: 17,
+        enemyStrength: 3.2,
+        next: { left: "peace13" }
+    },
+    peace13: {
+        id: "peace13",
+        path: "peace",
+        info: "A hush falls.",
+        waves: 6,
+        enemiesPerWave: 15,
+        enemyHealth: 18,
+        enemyStrength: 3.3,
+        next: { left: "peace14" }
+    },
+    peace14: {
+        id: "peace14",
+        path: "peace",
+        info: "A silent guardian approaches.",
+        waves: 6,
+        enemiesPerWave: 17,
+        enemyHealth: 19,
+        enemyStrength: 3.5,
+        next: { left: "peace15" }
+    },
+    peace15: {
+        id: "peace15",
+        path: "peace",
+        info: "You won, but at what cost?",
+        waves: 3,
+        enemiesPerWave: 20,
+        enemyHealth: 30,
+        enemyStrength: 5,
+        bosses: 1,
+        next: { left: "peace16" }
+    },
+    peace16: {
+        id: "peace16",
+        path: "peace",
+        info: "Balance shifts...",
+        waves: 7,
+        enemiesPerWave: 18,
+        enemyHealth: 20,
+        enemyStrength: 4,
+        next: { left: "peace17" }
+    },
+    peace17: {
+        id: "peace17",
+        path: "peace",
+        info: "Echoes ripple.",
+        waves: 7,
+        enemiesPerWave: 19,
+        enemyHealth: 21,
+        enemyStrength: 4.1,
+        next: { left: "peace18" }
+    },
+    peace18: {
+        id: "peace18",
+        path: "peace",
+        info: "Stillness breaks…",
+        waves: 7,
+        enemiesPerWave: 20,
+        enemyHealth: 23,
+        enemyStrength: 4.2,
+        next: { left: "peace19" }
+    },
+    peace19: {
+        id: "peace19",
+        path: "peace",
+        info: "Harmony destabilizes.",
+        waves: 8,
+        enemiesPerWave: 22,
+        enemyHealth: 24,
+        enemyStrength: 4.5,
+        bosses: 1,
+        next: { left: "peace20" }
+    },
+    peace20: {
+        id: "peace20",
+        path: "peace",
+        info: "...",
+        waves: 8,
+        enemiesPerWave: 22,
+        enemyHealth: 25,
+        enemyStrength: 4.7,
+        bosses: 3,
+        next: { left: "peace21" }
+    },
+    peace21: {
+        id: "peace21",
+        path: "peace",
+        info: "help...",
+        waves: 9,
+        enemiesPerWave: 24,
+        enemyHealth: 26,
+        enemyStrength: 5,
+        next: { left: "peace22" }
+    },
+    peace22: {
+        id: "peace22",
+        path: "peace",
+        info: "Order and Chaos blend together...",
+        waves: 9,
+        enemiesPerWave: 26,
+        enemyHealth: 28,
+        enemyStrength: 5.2,
+        next: { left: "peace23" }
+    },
+    peace23: {
+        id: "peace23",
+        path: "peace",
+        info: "A serene giant awakens.",
+        waves: 6,
+        bosses: 2,
+        enemiesPerWave: 35,
+        enemyHealth: 30,
+        enemyStrength: 6,
+        next: { left: "peace24" }
+    },
+    peace24: {
+        id: "peace24",
+        path: "peace",
+        info: "the final attack-",
+        waves: 7,
+        enemiesPerWave: 50,
+        enemyHealth: 32,
+        enemyStrength: 6.5,
+        next: { left: "peace25" }
+    },
+    peace25: {
+        id: "peace25",
+        path: "peace",
+        info: "???",
+        waves: 2,
+        bosses: 4,
+        enemiesPerWave: 250,
+        enemyHealth: 10,
+        enemyStrength: 0.5,
+        next: {},
+    },
+    machinery1: {
+        id: "machinery1",
+        path: "machinery",
+        info: "You hear metal ticking...",
+        waves: 2,
+        enemiesPerWave: 5,
+        enemyHealth: 4,
+        enemyStrength: 4,
+        next: { down: "machinery2" }
+    },
+    machinery2: {
+        id: "machinery2",
+        path: "machinery",
+        info: "Small gears roll toward you.",
+        waves: 2,
+        enemiesPerWave: 6,
+        enemyHealth: 5,
+        enemyStrength: 4.2,
+        next: { down: "machinery3" }
+    },
+    machinery3: {
+        id: "machinery3",
+        path: "machinery",
+        info: "...",
+        waves: 3,
+        enemiesPerWave: 7,
+        enemyHealth: 6,
+        enemyStrength: 4.5,
+        next: { down: "machinery4" }
+    },
+    machinery4: {
+        id: "machinery4",
+        path: "machinery",
+        info: "Hinges rattle.",
+        waves: 3,
+        enemiesPerWave: 8,
+        enemyHealth: 7,
+        enemyStrength: 4.7,
+        next: { down: "machinery5" }
+    },
+    machinery5: {
+        id: "machinery5",
+        path: "machinery",
+        info: "Loose bolts scatter.",
+        waves: 4,
+        enemiesPerWave: 9,
+        enemyHealth: 8,
+        enemyStrength: 5,
+        next: { down: "machinery6" }
+    },
+    machinery6: {
+        id: "machinery6",
+        path: "machinery",
+        info: "Something hums…",
+        waves: 4,
+        enemiesPerWave: 10,
+        enemyHealth: 10,
+        enemyStrength: 5.5,
+        next: { down: "machinery7" }
+    },
+    machinery7: {
+        id: "machinery7",
+        path: "machinery",
+        waves: 4,
+        info: "...",
+        enemiesPerWave: 11,
+        enemyHealth: 11,
+        enemyStrength: 6,
+        next: { down: "machinery8" }
+    },
+    machinery8: {
+        id: "machinery8",
+        path: "machinery",
+        info: "Gears begin turning faster.",
+        waves: 5,
+        enemiesPerWave: 12,
+        enemyHealth: 12,
+        enemyStrength: 6.3,
+        next: { down: "machinery9" }
+    },
+    machinery9: {
+        id: "machinery9",
+        path: "machinery",
+        info: "Pressure rises.",
+        waves: 5,
+        enemiesPerWave: 13,
+        enemyHealth: 13,
+        enemyStrength: 6.5,
+        next: { down: "machinery10" }
+    },
+    machinery10: {
+        id: "machinery10",
+        path: "machinery",
+        info: "..?",
+        waves: 5,
+        enemiesPerWave: 15,
+        enemyHealth: 14,
+        enemyStrength: 7,
+        bosses: 1,
+        next: { down: "machinery11" }
+    },
+    machinery11: {
+        id: "machinery11",
+        path: "machinery",
+        info: "ArgaRgArgdsfa?#.1",
+        waves: 6,
+        enemiesPerWave: 15,
+        enemyHealth: 15,
+        enemyStrength: 7.2,
+        next: { down: "machinery12" }
+    },
+    machinery12: {
+        id: "machinery12",
+        path: "machinery",
+        info: "...",
+        waves: 6,
+        enemiesPerWave: 16,
+        enemyHealth: 16,
+        enemyStrength: 7.5,
+        next: { down: "machinery13" }
+    },
+    machinery13: {
+        id: "machinery13",
+        path: "machinery",
+        info: "Metal strikes metal.",
+        waves: 6,
+        enemiesPerWave: 17,
+        enemyHealth: 17,
+        enemyStrength: 7.7,
+        next: { down: "machinery14" }
+    },
+    machinery14: {
+        id: "machinery14",
+        path: "machinery",
+        info: "A mechanical brute stomps near.",
+        waves: 6,
+        enemiesPerWave: 18,
+        enemyHealth: 18,
+        enemyStrength: 8,
+        next: { down: "machinery15" }
+    },
+    machinery15: {
+        id: "machinery15",
+        path: "machinery",
+        info: "",
+        waves: 3,
+        bosses: 1,
+        enemiesPerWave: 25,
+        enemyHealth: 30,
+        enemyStrength: 12,
+        next: { down: "machinery16" }
+    },
+    machinery16: {
+        id: "machinery16",
+        path: "machinery",
+        info: "Steam fills the air.",
+        waves: 7,
+        enemiesPerWave: 20,
+        enemyHealth: 20,
+        enemyStrength: 9,
+        next: { down: "machinery17" }
+    },
+    machinery17: {
+        id: "machinery17",
+        path: "machinery",
+        info: "fass",
+        waves: 7,
+        enemiesPerWave: 22,
+        enemyHealth: 21,
+        enemyStrength: 9.2,
+        next: { down: "machinery18" }
+    },
+    machinery18: {
+        id: "machinery18",
+        path: "machinery",
+        info: "hel p",
+        waves: 7,
+        enemiesPerWave: 25,
+        enemyHealth: 23,
+        enemyStrength: 9.5,
+        next: { down: "machinery19" }
+    },
+    machinery19: {
+        id: "machinery19",
+        path: "machinery",
+        info: "...pleøse",
+        waves: 8,
+        enemiesPerWave: 28,
+        enemyHealth: 24,
+        enemyStrength: 10,
+        bosses: 1,
+        next: { down: "machinery20" }
+    },
+    machinery20: {
+        id: "machinery20",
+        path: "machinery",
+        info: "Sømeting's cømˆng",
+        waves: 8,
+        enemiesPerWave: 30,
+        enemyHealth: 25,
+        enemyStrength: 11,
+        next: { down: "machinery21" }
+    },
+    machinery21: {
+        id: "machinery21",
+        path: "machinery",
+        info: "◊˘≥",
+        waves: 9,
+        enemiesPerWave: 32,
+        enemyHealth: 27,
+        enemyStrength: 12,
+        next: { down: "machinery22" }
+    },
+    machinery22: {
+        id: "machinery22",
+        path: "machinery",
+        info: "Metal scream",
+        waves: 9,
+        enemiesPerWave: 35,
+        enemyHealth: 28,
+        enemyStrength: 12.5,
+        next: { down: "machinery23" }
+    },
+    machinery23: {
+        id: "machinery23",
+        path: "machinery",
+        info: "A colossal machine activates. (help)",
+        waves: 6,
+        bosses: 2,
+        enemiesPerWave: 40,
+        enemyHealth: 30,
+        enemyStrength: 14,
+        next: { down: "machinery24" }
+    },
+    machinery24: {
+        id: "machinery24",
+        path: "machinery",
+        info: "The ground vibrates.",
+        waves: 7,
+        enemiesPerWave: 45,
+        enemyHealth: 32,
+        enemyStrength: 15,
+        next: { down: "machinery25" }
+    },
+    machinery25: {
+        id: "machinery25",
+        path: "machinery",
+        info: "???",
+        waves: 5,
+        enemiesPerWave: 50,
+        enemyHealth: 40,
+        enemyStrength: 18,
+        bosses: 10,
+        next: {}
+    }    
+    
+};
+let curLvl = levels["start"];
+
+function spawnDoors() {
+    doors.length = 0;
+    let doorDefinitions = [];
+    if (curLvl.id === "start") {
+        doorDefinitions = [
+            { dir: "up", color: "orange", text: "blood"},      // red-ish (blood)
+            { dir: "right", color: "#FFB74D", text: "machinery"},   // orange (combat/machinery)
+            { dir: "down", color: "#6EC6FF", text: "combat"},    // blue (machinery/peace)
+            { dir: "left", color: "#90EE90", text: "peace"}   // green (peace)
+        ];
     }
-    enemyHealth *= 1 + difCounter * 0.0002;
-    let minHP = Math.floor(enemyHealth - 3);
-    let maxHP = Math.ceil(enemyHealth + 3);
-    let thisHP = Math.floor(Math.random() * (maxHP - minHP + 1)) + minHP;
-    enemies.push(new Enemy(x, y, 1, 4, thisHP, player));
+    else if (curLvl.path === "blood") {
+        doorDefinitions = [
+            {dir: "up", color: "orange", text: `Level ${level}`}
+        ]
+    }
+    else if (curLvl.path === "combat") {
+        doorDefinitions = [
+            {dir: "down", color: "#6EC6FF", text: `Level ${level}`}
+        ]
+    }
+    else if (curLvl.path === "machinery") {
+        doorDefinitions = [
+            {dir: "right", color: "#FFB74D", text: `Level ${level}`}
+        ]
+    }
+    else if (curLvl.path === "peace") {
+        doorDefinitions = [
+            {dir: "left", color: "#90EE90", text: `Level ${level}`}
+        ]
+    }
+  
+    for (const d of doorDefinitions) {
+        const pos = getDoorPosition(d.dir);
+        doors.push({
+            dir: d.dir,
+            x: pos.x,
+            y: pos.y,
+            size: 72,      // square size
+            color: d.color,
+            text: d.text,
+            target: curLvl.next[d.dir]
+        });
+    }
+}
+
+function drawDoors() {
+    if (!showDoors) return;
+    for (const door of doors) {
+      ctx.save();
+      ctx.fillStyle = door.color;
+      ctx.fillRect(door.x - door.size/2, door.y - door.size/2, door.size, door.size);
+  
+      // outline
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = "white";
+      ctx.strokeRect(door.x - door.size/2, door.y - door.size/2, door.size, door.size);
+  
+      // small label
+      ctx.font = "16px Arial";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "white";
+      ctx.fillText(door.text.toUpperCase(), door.x, door.y + 6);
+      ctx.restore();
+    }
+}
+
+function getDoorPosition(dir) {
+    switch (dir) {
+      case "up": return { x: canvas.width / 2, y: 100 };
+      case "down": return { x: canvas.width / 2, y: canvas.height - 100 };
+      case "left": return { x: 100, y: canvas.height / 2 };
+      case "right": return { x: canvas.width - 100, y: canvas.height / 2 };
+    }
+}
+
+function checkDoorInteraction() {
+    showInteractPrompt = false;
+    currentDoorInfo = null;
+    doorClosest = null;
+
+    for (const door of doors) {
+        const dx = door.x - (player.x + player.width / 2);
+        const dy = door.y - (player.y + player.height / 2);
+        const dist = Math.hypot(dx, dy);
+
+        if (dist < 100) { //show <E>
+            showInteractPrompt = true; 
+            doorClosest = door;
+
+            // Get info
+            const lvl = levels[door.target];
+            if (lvl && lvl.info) currentDoorInfo = lvl.info;
+
+            if (keys["e"]) {
+                changeLevel(door.target);
+            }
+
+            return;
+        }
+    }
+}
+
+function drawDoorInteractionUI() {
+    if (!showInteractPrompt || !doorClosest) return;
+
+    ctx.save();
+    ctx.font = "bold 28px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+
+    ctx.fillText("<E>", doorClosest.x, doorClosest.y + 70);
+
+    if (currentDoorInfo) {
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "white";
+        ctx.fillText(currentDoorInfo, doorClosest.x, doorClosest.y + 95);
+    }
+
+    ctx.restore();
+}
+
+function changeLevel(path) {
+    playerPath = path;
+    console.log(`Path chosen: ${path}`);
+    loadLevel(path);
+}
+
+function loadLevel(path) {
+    for (const w of player.inventory) w.clearProjectiles();
+
+    drops = [];
+    console.log(curLvl.id);
+    for (const key in levels) {
+        const lvl = levels[key];
+        if (lvl.id.startsWith(path)) {
+          const num = parseInt(lvl.id.replace(/\D/g, ""));
+          if (num === level) {
+            curLvl = lvl;
+            break;
+          }
+        }
+    }
+    drawWeapons = true;
+    wavesCompleted = 0;
+    levelComplete = false;
+    waveComplete = false;
+    enemyCounter = 0;
+    enemies.length = 0;
+    showDoors = false;
+    doors.length = 0;
+    console.log(curLvl.path);
+
+    if (curLvl.path === "blood") canvas.style.backgroundColor = "orange";
+    if (curLvl.path === "combat") canvas.style.backgroundColor = "brown";
+    if (curLvl.path === "machinery") canvas.style.backgroundColor = "grey";
+    if (curLvl.path === "peace") canvas.style.backgroundColor = "palegreen";
+  
+    let multi = Math.ceil(Math.random() * 2)
+    if (curLvl.id === "start") {
+        thisLevelWaves = curLvl.waves;
+        let min = curLvl.enemiesPerWave - 3;
+        let max = curLvl.enemiesPerWave + 4;
+        thisWaveEnemies = Math.floor(Math.random() * (max - min + 1)) + min;
+        thisLevelHealthMin = curLvl.enemyHealth * multi
+        thisLevelHealthMax = Math.ceil(curLvl.enemyHealth * multi * 0.8);
+        
+    
+        enemiesRemainingInWave = thisWaveEnemies;
+        spawnWave();
+    } else {    
+        thisLevelWaves = curLvl.waves;
+        let min = curLvl.enemiesPerWave - 3;
+        let max = curLvl.enemiesPerWave + 5;
+        thisWaveEnemies = Math.floor(Math.random() * (max - min + 1)) + min;
+        thisLevelHealthMin = curLvl.enemyHealth * multi
+        thisLevelHealthMax = Math.ceil(curLvl.enemyHealth * multi * multi * 0.8);
+        if (curLvl.bosses) {
+            thisLevelBosses = curLvl.bosses; 
+        }
+        else thisLevelBosses = 0;
+    
+        enemiesRemainingInWave = thisWaveEnemies;
+        spawnWave();
+    }
+}
+
+async function spawnWave() {
+    showWaveLabel(wavesCompleted + 1);
+    if (showDoors) return;
+  
+    let thisHP = 0;
+    waveComplete = false;
+
+    for (let i = 0; i < thisWaveEnemies; i++) {
+      const side = Math.floor(Math.random() * 4);
+      let x, y;
+  
+      switch (side) {
+        case 0: x = Math.random() * canvas.width; y = -20; break;
+        case 1: x = canvas.width + 20; y = Math.random() * canvas.height; break;
+        case 2: x = Math.random() * canvas.width; y = canvas.height + 20; break;
+        case 3: x = -20; y = Math.random() * canvas.height; break;
+      }
+  
+      thisHP = Math.floor(Math.random() * (thisLevelHealthMax - thisLevelHealthMin + 1)) + thisLevelHealthMin;
+      enemies.push(new Enemy(x, y, 1, 3, thisHP, player, curLvl.enemyStrength));
+    }
+    if (wavesCompleted >= curLvl.waves - 1) {
+        if (!curLvl.bosses || curLvl.bosses <= 0) return; //no bosses
+        await sleep(500);
+        for (let i = 0; i < curLvl.bosses; i++ ) {
+            let multi = Math.random();
+            while (multi <= 0.5) multi = Math.random();
+            enemies.push(new Boss1(canvas.width * Math.random(), canvas.height * Math.random(), 1, 3, (thisHP * player.level * 3 + 50) * multi, player, curLvl.enemyStrength));
+        }
+        showBossLabel();
+    }
+}
+
+async function updateWaveSystem() {
+    // When all enemies are dead & wave completion hasn't been handled yet
+    if (enemies.length === 0 && !waveComplete && !showDoors) {
+      waveComplete = true;
+      wavesCompleted++;
+  
+      if (wavesCompleted >= thisLevelWaves) {
+        levelComplete = true;
+        drawWeapons = false;
+      } else {
+        await sleep(1500);
+        spawnWave();
+      }
+    }
+
+    let item = null;
+    if (levelComplete && !showDoors) {
+        level += 1;
+
+        item = curLvl.unlocks;
+        if (item) {
+            console.log(`unlocked${item}!`);
+            if (item === "VampireFang") {
+                unlockedVampireFang = true;
+                showCutscene = true;
+                console.log(showCutscene)
+                console.log("unlocked fang");
+            }
+            if (item === "VampireCloak") {
+                unlockedVampireCloak = true;
+            }
+        }
+
+        if (curLvl.next && Object.keys(curLvl.next).length > 0) {
+          showDoors = true;
+          spawnDoors();
+          console.log(`Doors spawned for level: ${curLvl.id}`);
+        } else {
+          console.log(`No next levels found for ${curLvl.id}`);
+        }
+
+        levelComplete = false;
+        drawWeapons = false;
+    }
+    return item;
+}
+
+function drawVampireBladeIcon(x, y, size) {
+    ctx.save();
+    // ─── Draw UI box ───────────────────────────
+    const boxSize = size * 2;            // square around icon
+    const half = boxSize / 2;
+    const r = 10;                        // corner radius
+    ctx.fillStyle = "#111";              // dark background
+    ctx.strokeStyle = "#550000";         // dark red border
+    ctx.lineWidth = 4;
+
+    // rounded rectangle
+    const dx = 10; // shift left
+    const dy = 10; // shift down
+    
+    ctx.beginPath();
+    ctx.moveTo(x - half + r - dx, y - half + dy);
+    ctx.lineTo(x + half - r - dx, y - half + dy);
+    ctx.quadraticCurveTo(x + half - dx, y - half + dy, x + half - dx, y - half + r + dy);
+    ctx.lineTo(x + half - dx, y + half - r + dy);
+    ctx.quadraticCurveTo(x + half - dx, y + half + dy, x + half - r - dx, y + half + dy);
+    ctx.lineTo(x - half + r - dx, y + half + dy);
+    ctx.quadraticCurveTo(x - half - dx, y + half + dy, x - half - dx, y + half - r + dy);
+    ctx.lineTo(x - half - dx, y - half + r + dy);
+    ctx.quadraticCurveTo(x - half - dx, y - half + dy, x - half + r - dx, y - half + dy);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    ctx.translate(x, y);  // move origin to center for blade drawing
+
+    const bladeColor = "#cc0000";   // deep red
+    const highlight = "#ff6666";    // light gleam
+    const outline = "#440000";      // darker outline
+
+
+    // Draw a single blade, angled bottom-left
+    function drawBlade(offsetX, offsetY, angleShift = 0) {
+        ctx.save();
+        ctx.translate(offsetX, offsetY);
+
+        // Aim blades diagonally down-left
+        ctx.rotate(Math.PI * 1.25 + angleShift);
+
+        // Blade
+        ctx.beginPath();
+        ctx.moveTo(0, -size * 0.55);
+        ctx.lineTo(size * 0.22, size * 0.55);
+        ctx.lineTo(-size * 0.22, size * 0.55);
+        ctx.closePath();
+
+        // Fill & outline
+        ctx.fillStyle = bladeColor;
+        ctx.fill();
+        ctx.strokeStyle = outline;
+        ctx.lineWidth = 4;
+        ctx.stroke();
+
+        // Gleam highlight
+        ctx.beginPath();
+        ctx.moveTo(-size * 0.06, -size * 0.25);
+        ctx.lineTo(size * 0.06, size * 0.3);
+        ctx.strokeStyle = highlight;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.restore();
+    }
+    // Draw 3 blades with good spacing
+    drawBlade(-0.55 * size, -0.2* size, 0);                // center blade
+    drawBlade(4, size * 0.5, 0.05);        // top-right blade
+    drawBlade(-size * 0.50, size * 0.5, -0.1); // bottom-left blade
+    ctx.restore();
+}
+
+async function unlockCutscene(item) { //takes the unlocked item
+    if (!showCutscene) return;
+    if (size >= 100) {
+        await sleep(2000);
+        showCutscene = false;
+    }
+    size += 0.5;
+    if (item === "VampireFang") {
+        drawVampireBladeIcon(canvas.width / 2 - 500, canvas.height / 2 - 100, size);
+    }
 }
 
 function isButtonValid(btn) {
     const id = btn.id;
-  
     // --- Handle Magic Wand logic ---
     if (id.startsWith("upgradeMagicWand")) {
       const wand = player.inventory.find(w => w.constructor.name === "MagicWand");
@@ -920,7 +2530,7 @@ function isButtonValid(btn) {
       return targetLevel === wand.level;
     }
     // --- Handle shockWave logic ---
-    if (id.startsWith("upgradeshockWave")) {
+    if (id.startsWith("upgradeShockWave")) {
       const shockWave = player.inventory.find(w => w.constructor.name === "ShockWave");
       if (!shockWave) return false;
   
@@ -1007,12 +2617,32 @@ function isButtonValid(btn) {
     
         return targetLevel === wand.level;
     }
+
+    if (id.startsWith("upgradeVampireFang")) {
+        const fang = player.inventory.find(w => w.constructor.name === "VampireFang");
+        if (!fang) return false;
+    
+        const match = id.match(/\d+$/);
+        const targetLevel = match ? parseInt(match[0]) : 1;
+    
+        return targetLevel === fang.level;
+    }
+    
+    if (id.startsWith("upgradeBloodLeach")) {
+        const leach = player.inventory.find(w => w.constructor.name === "BloodLeach");
+        if (!leach) return false;
+    
+        const match = id.match(/\d+$/);
+        const targetLevel = match ? parseInt(match[0]) : 1;
+    
+        return targetLevel === leach.level;
+    }
   
     // --- Handle buy buttons (always valid if not owned) ---
     if (id.startsWith("buyMagicWand")) {
       return !player.inventory.find(w => w.constructor.name === "MagicWand");
     }
-    if (id.startsWith("buyshockWave")) {
+    if (id.startsWith("buyShockWave")) {
       return !player.inventory.find(w => w.constructor.name === "ShockWave");
     }
     if (id.startsWith("buyFireWand")) {
@@ -1042,6 +2672,15 @@ function isButtonValid(btn) {
         const maxWand = wand.level >= 9;
         return !player.inventory.find(w => w.constructor.name === "HolyWand") && maxWand;
     }
+    if (id.startsWith("buyVampireFang")) {
+        return !player.inventory.find(w => w.constructor.name === "VampireFang") && unlockedVampireFang;
+    }
+    if (id.startsWith("buyBloodLeach")) {
+        const fang = player.inventory.find(w => w instanceof VampireFang);
+        if (!fang) return false;
+        const maxFang = fang.level >= 9;
+        return !player.inventory.find(w => w.constructor.name === "BloodLeach") && maxFang;
+    }
     
   
     // other generic stuff is always valid
@@ -1049,7 +2688,10 @@ function isButtonValid(btn) {
 }
 
 function getOptions() {
-    if (buttons.length === 0) return;
+    if (buttons.length === 0) {
+        paused = false;
+        return;
+    }
     // filter to only valid buttons
     let validButtons = buttons.filter(b => isButtonValid(b, player));
     validButtons = [...new Map(validButtons.map(b => [b.id, b])).values()];
@@ -1060,18 +2702,27 @@ function getOptions() {
     }
     
     // shuffle buttons
-    let randBtns = validButtons.sort(() => Math.random() - 0.5);
+    let randBtns = [...validButtons].sort(() => Math.random() - 0.5);
     randBtns = validButtons.sort(() => Math.random() - 0.5);
     randBtns = validButtons.sort(() => Math.random() - 0.5);
     randBtns = validButtons.sort(() => Math.random() - 0.5);
     randBtns = validButtons.sort(() => Math.random() - 0.5);
     
     // pick up to 3
-    const options = [];
-    const pickCount = Math.min(3, randBtns.length);
+    let options = [];
+    let pickCount = Math.min(3, randBtns.length);
+
     for (let i = 0; i < pickCount; i++) {
-        options.push(randBtns[i]);
+        const btn = randBtns[i];
+        if (btn.id.startsWith("buy") && Math.random() < 0.6) { //70% chance to skip buy buttons
+            i--;
+            randBtns = [...randBtns].sort(() => Math.random() - 0.5);
+            continue;
+        }
+        randBtns.splice(i, 1);
+        options.push(btn);
     }
+
     
     showLevelUpMenu(options);
 }
@@ -1120,6 +2771,81 @@ function applyUpgrade(btnEl) {
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function showWaveLabel(waveNum) {
+    waveLabelText = `Wave ${waveNum}`;
+    waveLabelAlpha = 1;
+    waveLabelTimer = 120; // frames to stay visible (adjust as needed)
+}
+
+function drawWaveLabel() {
+    if (waveLabelAlpha <= 0) return;
+
+    ctx.save();
+    ctx.globalAlpha = waveLabelAlpha;
+    ctx.font = "bold 48px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText(waveLabelText, canvas.width / 2, 80);
+    ctx.restore();
+
+    // fade out smoothly
+    if (paused) return;
+        if (waveLabelTimer > 0) {
+            waveLabelTimer--;
+        } else {
+            waveLabelAlpha -= 0.02;
+            if (waveLabelAlpha < 0) waveLabelAlpha = 0;
+        }
+}
+
+function showBossLabel() {
+    bossLabelText = "BOSS!!";
+    bossLabelAlpha = 1;
+    bossLabelTimer = 130; // stays fully visible for a bit
+    bossPulse = 0;        // for scaling animation
+}
+
+function drawBossLabel() {
+    if (bossLabelAlpha <= 0) return;
+
+    bossPulse += 0.1; // pulsing speed
+    const scale = 1 + Math.sin(bossPulse) * 0.1; // pulsating size
+
+    ctx.save();
+    ctx.globalAlpha = bossLabelAlpha;
+
+    // position
+    const x = canvas.width / 2;
+    const y = 350;
+
+    ctx.translate(x, y);
+    ctx.scale(scale, scale);
+
+    ctx.font = "bold 100px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // glowing shadow
+    ctx.shadowColor = "red";
+    ctx.shadowBlur = 25;
+
+    // main text color
+    ctx.fillStyle = "#ff2222";
+    ctx.fillText(bossLabelText, 0, 0);
+
+    ctx.restore();
+
+    // fade logic
+    if (!paused) {
+        if (bossLabelTimer > 0) {
+            bossLabelTimer--;
+        } else {
+            bossLabelAlpha -= 0.02;
+            if (bossLabelAlpha < 0) bossLabelAlpha = 0;
+        }
+    }
 }
 
 async function drawTimer() {
@@ -1209,15 +2935,24 @@ function updateAttributes(deltaTime, enemies) {
 }
 
 function gameLoop(time) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const deltaTime = time - lastTime;
+    lastTime = time;
+    if (!paused) difCounter += (1 / (1 + difficulty * 500)) * 0.00001;
     if (!player.alive) {
         drawRedDeath();
         return;
     }
-    const deltaTime = time - lastTime;
-    lastTime = time;
-    if (!paused) difCounter += (1 / (1 + difficulty * 500)) * 0.00001;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+
+    let item = updateWaveSystem();
+    if (showCutscene && !paused && item) unlockCutscene(item);      //TODO: MAKE IT WORK!
+    showCutscene = true;
+    drawDoors();
+    checkDoorInteraction();
+
     if (player.previousLevel == player.level) {
         player.level += 1;
         paused = true;
@@ -1228,21 +2963,20 @@ function gameLoop(time) {
     player.showStats(ctx, canvas);
     if (paused === false) {
         player.update(canvas, deltaTime, enemies);
-        player.checkCollision(enemies, drops, paused);
+        player.checkCollision(enemies, drops);
     }
 
-    if (Math.random() < difCounter && !paused) spawnEnemies();  //spawn enemies
     for (let i = enemies.length - 1; i >= 0; i--) {
         let e = enemies[i];
       
         if (!paused) {
-            e.update(player);
+            e.update(player, deltaTime);
         }
         e.draw(ctx);
         e.showHealth(ctx);
 
         if (!e.alive) {
-            e.spawnDrops(drops)
+            e.spawnDrops(drops);
             enemies.splice(i, 1);
         }
     }
@@ -1262,20 +2996,33 @@ function gameLoop(time) {
         }
     }
 
-    if (paused === false) updateAttributes(deltaTime, enemies);
-    drawAttributes();
+    if (drawWeapons) {
+        if (paused === false) updateAttributes(deltaTime, enemies);
+        drawAttributes();
+    }
 
-    if (lastPlayerHealth != player.health) {
+    if (lastPlayerHealth > player.health) {
         lastPlayerHealth = player.health;
         alpha = 1;
     }
+    else if (lastPlayerHealth < player.health) {
+        lastPlayerHealth = player.health;
+
+    }
+
+    drawDoorInteractionUI();
+    drawWaveLabel();
+    drawBossLabel();
+
     if (alpha > 0) alpha -= 0.06
     if (alpha <= 0) alpha = 0;
     drawRedVignette(alpha);
     
+    
     requestAnimationFrame(gameLoop);
 }
 
+loadLevel();
 gameLoop();
 
 //track mouse position relative to canvas
