@@ -6,7 +6,8 @@ export class Player {
     this.height = 40;
     this.dir = 1;
     this.speed = 5;
-    this.health = 1000;
+    this.maxHealth = 500;
+    this.health = this.maxHealth;
     this.alive = true;
     this.keys = { w: false, a: false, s: false, d: false };
     this.lastHitTime = Date.now();
@@ -20,6 +21,7 @@ export class Player {
     this.lifeSteal = 0;
     this.hasVampireCloak = false;
     this.magnetLevel = 0;
+    this.armor = 0;
     this.inventory = [];
 
     // key listeners
@@ -91,7 +93,6 @@ export class Player {
   
     ctx.restore(); // restore canvas so only the player is flipped
   }   
-  
 
   showStats(ctx, canvas) {
     // === Health Text ===
@@ -171,28 +172,16 @@ export class Player {
         drops.splice(i, 1);
       }
     }
-    if (this.xp >= this.requirement) {
-      this.previousLevel += 1;
-      this.xp = this.xp - this.requirement;
-      if (this.level < 20) {
-        this.requirement *= 1.5 - (this.level - 1) * 0.02;
-      }
-      else if (this.level <= 40) {
-        this.requirement *= 1.5 - (this.level - 1) * 0.03;
-      }
-      else {
-        this.requirement *= 1.5 - (this.level - 1) * 0.04;
-      }
-      if (this.requirement <= 1) {
-        this.requirement *= 1.01;
-      }
-    }
+    let L = this.level;
+    let multi = 0.00002491 * L * L - 0.002953 * L + 1.502928;
+    this.requirement *= multi;
   }
   
   takeDamage(amount) {
     const now = Date.now()
     if (now - this.lastHitTime < 300) return;
-    this.health -= Math.ceil(amount);
+    let hit = Math.ceil(amount);
+    this.health -= Math.min(hit, this.maxHealth);
     this.lastHitTime = Date.now()
 
     if (this.health <= 0) {
