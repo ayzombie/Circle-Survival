@@ -80,3 +80,16 @@ canvas {
     transition: opacity 1s ease-out, transform 1s ease-out;
     z-index: 1000;
 }
+
+.blood-drop {
+    position: absolute;
+    font-size: 20px;
+    pointer-events: none;
+    animation: bloodFloat 0.8s ease-out;
+  }
+  
+  @keyframes bloodFloat {
+    0% { opacity: 1; transform: translateY(0px) scale(1); }
+    100% { opacity: 0; transform: translateY(-20px) scale(1.1); }
+  }
+  

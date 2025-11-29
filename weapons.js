@@ -126,6 +126,7 @@ export class OrbitBlade extends Weapon {
     this.rotationSpeed = -0.002; // radians per ms normal: -0.002. has to be negeative
     this.active = false;
     this.activeTime = 2500;
+    this.lastHit = Date.now();
     this.timer = 0;
     this.swords = 1;
     this.level = 1;
@@ -213,6 +214,9 @@ export class OrbitBlade extends Weapon {
       const dist = Math.hypot(dx, dy);
 
       if (dist < projectile.radius + enemy.radius) {
+        if (Date.now() - this.lastHit <= 200) return true;
+        this.lastHit = Date.now();
+
         enemy.takeDmg(this.damage);
         return true;
       }
@@ -517,13 +521,13 @@ export class ShockWave extends Weapon {
   update(deltaTime, enemies) {
     // --- Level-based stat updates ---
     if (this.level === 2) {
-      this.damage = 4;
+      this.damage = 5;
     } else if (this.level === 3) {
-      this.range = 70;
+      this.range = 75;
       this.cooldown = 2000;
     } else if (this.level === 4) {
       this.cooldown = 1700;
-      this.damage = 7;
+      this.damage = 10;
     } else if (this.level === 5) {
       this.cooldown = 1800;
       this.range = 100;
@@ -532,12 +536,13 @@ export class ShockWave extends Weapon {
       this.damage = 15;
     } else if (this.level === 7) {
       this.cooldown = 1500;
+      this.swingTime = 450;
       this.damage = 25;
     } else if (this.level === 8) {
-      this.range = 125;
+      this.range = 150;
       this.damage = 35;
     } else if (this.level === 9) {
-      this.swingTime = 500;
+      this.swingTime = 750;
       this.cooldown = 1000;
       this.damage = 50;
     }
@@ -597,7 +602,7 @@ export class FrostStaff extends Weapon {
   constructor(player) {
     super(player);
     this.cooldown = 1500;   // ms between shots
-    this.damage = 2;
+    this.damage = 1;
     this.speed = 3;
     this.lifeTime = 100;    // how long the projectile lives
     this.slowness = 1;      // how strong the slow is
@@ -694,7 +699,7 @@ export class LavaEruption extends Weapon {
     super(player);
     this.cooldown = 4000;       // time between eruptions
     this.damage = 10;
-    this.radius = 50;
+    this.radius = 40;
     this.lavaDuration = 1000;   // how long lava lasts
     this.warningTime = 2000;    // flashing before eruption
     this.lavaSpots = [];        // <-- here, now it's per weapon
@@ -705,39 +710,36 @@ export class LavaEruption extends Weapon {
 
   update(deltaTime, enemies, canvas) {
     if (this.level == 2) {
+      this.amount = 2;
       this.cooldown = 3000;
     }
     if (this.level == 3) {
       this.damage = 15;
-      this.radius = 75;
+      this.radius = 50;
     }
     if (this.level == 4) {
-      this.amount = 2;
-      this.damage = 25;
+      this.cooldown = 2000;
     }
     if (this.level == 5) {
-      this.damage = 45;
-      this.radius = 90;
+      this.damage = 20;
+      this.radius = 75;
     }
     if (this.level == 6) {
       this.amount = 3;
       this.cooldown = 2000;
-      this.lavaDuration = 2000;
-      this.damage = 40;
     }
     if (this.level == 7) {
-      this.cooldown = 1800;
       this.warningTime = 1500;
-      this.damage = 55;
+      this.damage = 25;
     }
     if (this.level == 8) {
       this.radius = 100;
-      this.lavaDuration = 2500;
+      this.lavaDuration = 2000;
     }
     if (this.level == 9) {
-      this.amount = 5;
-      this.damage = 80;
-      this.radius = 125;
+      this.amount = 4;
+      this.damage = 30;
+      this.cooldown = 1800;
     }
 
     const now = Date.now();

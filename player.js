@@ -5,7 +5,8 @@ export class Player {
     this.width = 40;
     this.height = 40;
     this.dir = 1;
-    this.speed = 5;
+    this.baseSpeed = 5;
+    this.speed = this.baseSpeed;
     this.maxHealth = 500;
     this.health = this.maxHealth;
     this.alive = true;
@@ -18,6 +19,8 @@ export class Player {
     this.xpMulti = 1;
     this.spinach = 0;
     this.dmgMulti = 1;
+    this.frosted = 0;
+    this.frostTime = 0;
     this.lifeSteal = 0;
     this.hasVampireCloak = false;
     this.magnetLevel = 0;
@@ -47,28 +50,41 @@ export class Player {
       this.dir = 1;
       this.x += this.speed;
     }
-  
     // clamp to keep player inside canvas
     this.x = Math.max(0, Math.min(this.x, canvas.width - this.width));
     this.y = Math.max(0, Math.min(this.y, canvas.height - this.height));
+
+    if (this.frostTime > 0) {
+        this.frostTime -= deltaTime;
+        // slow down depending on frosted level (cap at 90% slow)
+        const slowFactor = Math.min(this.frosted * 0.3, 0.9);
+        this.speed = this.baseSpeed * (1 - slowFactor);
+    } else {
+        this.frosted = 0;
+        this.speed = this.baseSpeed;
+    }
   }
 
   draw(ctx) {
     ctx.save();               // save canvas state
     ctx.translate(this.x, this.y);
     ctx.scale(this.dir, 1);   // flip horizontally if dir = -1
-  
-    // Draw cloak relative to player center
     ctx.fillStyle = "black";
+
+    if (this.frosted > 7) {
+      ctx.fillStyle = "darkcyan";
+    } 
+    else if (this.frosted > 3) {
+      ctx.fillStyle = "blue";
+    } 
+    else if (this.frosted > 0) {
+      ctx.fillStyle = "darkblue";
+    }
     ctx.beginPath();
-  
-    // Top of cloak (anchored behind player)
     ctx.moveTo(-15, -15);
     ctx.lineTo(this.width - 15, -15);
-  
     const bottomY = this.height + 15;
-  
-    // Right side curve
+
     ctx.quadraticCurveTo(
       this.width + 10,
       this.height,
@@ -86,9 +102,12 @@ export class Player {
   
     ctx.closePath();
     ctx.fill();
+    ctx.fillStyle = "blue";
   
     // Draw player body AFTER cloak
-    ctx.fillStyle = "blue";
+    if (this.frosted > 4) {
+      ctx.fillStyle = "cyan";
+    }
     ctx.fillRect(-15, -15, this.width, this.height);
   
     ctx.restore(); // restore canvas so only the player is flipped
@@ -172,12 +191,32 @@ export class Player {
         drops.splice(i, 1);
       }
     }
-    let L = this.level;
-    let multi = 0.00002491 * L * L - 0.002953 * L + 1.502928;
-    this.requirement *= multi;
+    if (this.xp >= this.requirement) {
+      this.xp = this.xp - this.requirement;
+      this.previousLevel += 1;
+      let l = this.level;
+      let multi = 1.5;
+      if (l <= 10) {
+        multi = 1.4;
+      }
+      else if (l <= 20) {
+        multi = 1.1;
+      }
+      else if (l <= 30) {
+        multi = 1.05;
+      }
+      else if (l <= 40) {
+        multi = 1.01;
+      }
+      else {
+        multi = 1.005;
+      }
+      this.requirement *= multi;
+      this.requirement = this.requirement.toFixed(5);
+    }
   }
   
-  takeDamage(amount) {
+  takeDamage(amount) {  //normal
     const now = Date.now()
     if (now - this.lastHitTime < 300) return;
     let hit = Math.ceil(amount);
@@ -189,6 +228,26 @@ export class Player {
       this.alive = false;
     }
     this.heal(Math.floor(this.lifeSteal), this);
+  }
+
+  takeDmg(amount, proj) { //for projectiles
+    if (proj.frosted && proj.frostTime) { //for slow stuff
+      if (proj.frosted > 0) {
+        this.applyFrost(proj.frosted, proj.frostTime);
+      }
+    }
+    let hit = Math.ceil(amount);
+    this.health -= Math.min(hit, this.maxHealth);
+    if (this.health <= 0) {
+      this.health = 0;
+      this.alive = false;
+    }
+    this.heal(Math.floor(this.lifeSteal), this);
+  }
+
+  applyFrost(level, frostTime) {
+    this.frosted = level;
+    this.frostTime = frostTime;  
   }
 
   heal(amount, enemy) {

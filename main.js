@@ -1,5 +1,9 @@
 import { Player } from "./player.js";
-import { Enemy } from "./enemy.js";
+import { Shard } from "./enemy.js";
+import { BloodEye } from "./enemy.js";
+import { BloodTurret } from "./enemy.js";
+import { Ram } from "./enemy.js";
+import { BloodThrall } from "./enemy.js";
 import { Boss1 } from "./enemy.js";
 import { Ammo } from "./ammo.js";
 import { MagicWand } from "./weapons.js";
@@ -1064,7 +1068,20 @@ function resizeCanvas() {
 }
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
- 
+let timeOfDay = 0.5;
+let thisDayLen = 40000 + Math.random() * 40000;
+// thisDayLen = 10000;
+let weatherState = "day";
+let isDay = true;
+let nextWeatherEvent = "";
+let lastWeatherEvent = "";
+let nextWeatherTime = 10000;
+let choosedNextWeather = false;
+let weatherMulti = 1;
+
+let dayEvents = ["day"];
+let nightEvents = [ "bloodmoon", "night"];
+const moonCraters = [];
 const enemies = [];
 const ammos = [];
 let drops = [];
@@ -1073,27 +1090,20 @@ const keys = { e: false };
 let showDoors = false;
 let paused = false;
 let pausedGame = false;
-let lastTime = 0;
-let difCounter = 0.01;
-let difficulty = 0.0005; //originally 0.00005
+let lastTime = performance.now();
 let timer = 0;
 let alpha = 0;
 let lastPlayerHealth = player.health;
 let level = 0;
-let size = 20;
+let size = 20;  
 let thisLevelWaves = 0;
 let wavesCompleted = 0;
 let thisWaveEnemies = 0;
 let waveComplete = false;
 let levelComplete = false;
-let thisLevelEnemies = 0;
-let enemyCounter = 0;
 let thisLevelHealthMin = 0;
 let thisLevelHealthMax = 0;
-let enemiesRemainingInWave = 0;
 let drawWeapons = true;
-let playerPath = "";
-let thisLevelBosses = 0;
 let waveLabelAlpha = 0;
 let waveLabelText = "";
 let waveLabelTimer = 0;
@@ -1106,8 +1116,6 @@ let currentDoorInfo = null;
 let doorClosest = null;
 let showCutscene = false;
 let curItem = null;
-
-// player.inventory.push(new BloodLeach(player));
 
 window.addEventListener("keydown", e => {
     const k = e.key.toLowerCase();
@@ -1123,10 +1131,12 @@ const levels = {
         id: "start",
         path: "neutral",
         waves: 2,
-        enemiesPerWave: 4,
+        enemiesPerWave: 4, //4
         enemyHealth: 3,
         enemyStrength: 1,
-        // unlocks: "VampireFang",
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 100 },
+        },
         next: {
             up: "blood1",
             right: "combat1",
@@ -1142,6 +1152,10 @@ const levels = {
         enemiesPerWave: 5,
         enemyHealth: 5,
         enemyStrength: 3,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 95 },
+            BloodEye: { cls: BloodEye, weight: 5 },
+        },
         // unlocks: "VampireFang",
         next: { up: "blood2"}
     },
@@ -1153,6 +1167,10 @@ const levels = {
         enemiesPerWave: 9,
         enemyHealth: 6,
         enemyStrength: 3,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 90 },
+            BloodEye: { cls: BloodEye, weight: 10 },
+        },
         next: { up: "blood3"}
     },
     blood3: {
@@ -1163,6 +1181,10 @@ const levels = {
         enemiesPerWave: 12,
         enemyHealth: 8,
         enemyStrength: 4,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 85 },
+            BloodEye: { cls: BloodEye, weight: 15 },
+        },
         next: { up: "blood4"}
     },
     blood4: {
@@ -1173,6 +1195,10 @@ const levels = {
         enemiesPerWave: 30,
         enemyHealth: 9,
         enemyStrength: 5,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 80 },
+            BloodEye: { cls: BloodEye, weight: 20 },
+        },
         next: { up: "blood5"}
     },
     blood5: {
@@ -1183,6 +1209,10 @@ const levels = {
         enemiesPerWave: 15,
         enemyHealth: 10,
         enemyStrength: 5,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 70 },
+            BloodEye: { cls: BloodEye, weight: 30 },
+        },
         next: { up: "blood6" }
     },
     blood6: {
@@ -1193,6 +1223,11 @@ const levels = {
         enemiesPerWave: 15,
         enemyHealth: 12,
         enemyStrength: 6,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 45 },
+            BloodEye: { cls: BloodEye, weight: 50 },
+            BloodTurret: { cls: BloodTurret, weight: 5 }
+        },
         next: { up: "blood7" }
     },
     blood7: {
@@ -1203,6 +1238,11 @@ const levels = {
         enemiesPerWave: 20,
         enemyHealth: 13,
         enemyStrength: 6,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 30 },
+            BloodEye: { cls: BloodEye, weight: 65 },
+            BloodTurret: { cls: BloodTurret, weight: 5 }
+        },
         next: { up: "blood8" }
     },
     blood8: {
@@ -1213,6 +1253,10 @@ const levels = {
         enemiesPerWave: 20,
         enemyHealth: 15,
         enemyStrength: 6.5,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 10 },
+            BloodEye: { cls: BloodEye, weight: 90 },
+        },
         next: { up: "blood9" }
     },
     blood9: {
@@ -1223,6 +1267,11 @@ const levels = {
         enemiesPerWave: 5,
         enemyHealth: 16,
         enemyStrength: 7,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 70 },
+            BloodEye: { cls: BloodEye, weight: 20 },
+            BloodTurret: { cls: BloodTurret, weight: 10 }
+        },
         next: { up: "blood10" }
     },
     blood10: {
@@ -1234,6 +1283,10 @@ const levels = {
         enemiesPerWave: 25,
         enemyHealth: 20,
         enemyStrength: 10,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 50 },
+            BloodEye: { cls: BloodEye, weight: 50 },
+        },
         // unlocks: "VampireCloak",
         next: { up: "blood11" }
     },
@@ -1245,6 +1298,11 @@ const levels = {
         enemiesPerWave: 20,
         enemyHealth: 21,
         enemyStrength: 7,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 30 },
+            BloodEye: { cls: BloodEye, weight: 50 },
+            BloodTurret: { cls: BloodTurret, weight: 20 }
+        },
         next: { up: "blood12" }
     },
     blood12: {
@@ -1255,6 +1313,11 @@ const levels = {
         enemiesPerWave: 23,
         enemyHealth: 23,
         enemyStrength: 7.5,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 15 },
+            BloodEye: { cls: BloodEye, weight: 60 },
+            BloodTurret: { cls: BloodTurret, weight: 25 }
+        },
         next: { up: "blood13" }
     },
     blood13: {
@@ -1265,6 +1328,9 @@ const levels = {
         enemiesPerWave: 25,
         enemyHealth: 25,
         enemyStrength: 7.5,
+        enemyTypes: {
+            BloodTurret: { cls: BloodTurret, weight: 100 }
+        },
         next: { up: "blood14" }
     },
     blood14: {
@@ -1274,6 +1340,11 @@ const levels = {
         enemiesPerWave: 27,
         enemyHealth: 27,
         enemyStrength: 10,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 5 },
+            BloodEye: { cls: BloodEye, weight: 45 },
+            BloodTurret: { cls: BloodTurret, weight: 50 }
+        },
         next: { up: "blood15" }
     },
     blood15: {
@@ -1285,6 +1356,10 @@ const levels = {
         enemiesPerWave: 30,
         enemyHealth: 28,
         enemyStrength: 12,
+        enemyTypes: {
+            BloodEye: { cls: BloodEye, weight: 95 },
+            Ram: { cls: Ram, weight: 5 }
+        },
         next: { up: "blood16" }
     },
     blood16: {
@@ -1295,6 +1370,12 @@ const levels = {
         enemiesPerWave: 32,
         enemyHealth: 30,
         enemyStrength: 15,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 10 },
+            BloodEye: { cls: BloodEye, weight: 30 },
+            BloodTurret: { cls: BloodTurret, weight: 30 },
+            Ram: { cls: Ram, weight: 30 }
+        },
         next: { up: "blood17" }
     },
     blood17: {
@@ -1305,6 +1386,13 @@ const levels = {
         enemiesPerWave: 32,
         enemyHealth: 30,
         enemyStrength: 10,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 10 },
+            BloodEye: { cls: BloodEye, weight: 30 },
+            BloodTurret: { cls: BloodTurret, weight: 20 },
+            Ram: { cls: Ram, weight: 30 },
+            BloodThrall: { cls: BloodThrall, weight: 10 },
+        },
         next: { up: "blood18" }
     },
     blood18: {
@@ -1315,6 +1403,11 @@ const levels = {
         enemiesPerWave: 33,
         enemyHealth: 30,
         enemyStrength: 9,
+        enemyTypes: {
+            BloodTurret: { cls: BloodTurret, weight: 30 },
+            Ram: { cls: Ram, weight: 50 },
+            BloodThrall: { cls: BloodThrall, weight: 20 },
+        },
         next: { up: "blood19" }
     },
     blood19: {
@@ -1326,6 +1419,11 @@ const levels = {
         enemiesPerWave: 34,
         enemyHealth: 32,
         enemyStrength: 9.5,
+        enemyTypes: {
+            BloodTurret: { cls: BloodTurret, weight: 30 },
+            Ram: { cls: Ram, weight: 40 },
+            BloodThrall: { cls: BloodThrall, weight: 30 },
+        },
         next: { up: "blood20" }
     },
     blood20: {
@@ -1337,7 +1435,10 @@ const levels = {
         enemyHealth: 33,
         enemyStrength: 9.4,
         bosses: 2,
-        // unlocks: "VampireFang",
+        enemyTypes: {
+            BloodTurret: { cls: BloodTurret, weight: 50 },
+            BloodThrall: { cls: BloodThrall, weight: 50 },
+        },
         next: { up: "blood21" }
     },
     blood21: {
@@ -1348,6 +1449,12 @@ const levels = {
         enemiesPerWave: 36,
         enemyHealth: 34,
         enemyStrength: 9.6,
+        enemyTypes: {
+            BloodEye: { cls: BloodEye, weight: 20 },
+            BloodTurret: { cls: BloodTurret, weight: 20 },
+            Ram: { cls: Ram, weight: 40 },
+            BloodThrall: { cls: BloodThrall, weight: 20 },
+        },
         next: { up: "blood22" }
     },
     blood22: {
@@ -1358,6 +1465,10 @@ const levels = {
         enemiesPerWave: 37,
         enemyHealth: 35,
         enemyStrength: 10,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 50 },
+            BloodThrall: { cls: BloodThrall, weight: 50 },
+        },
         next: { up: "blood23" }
     },
     blood23: {
@@ -1369,6 +1480,10 @@ const levels = {
         enemiesPerWave: 60,
         enemyHealth: 30,
         enemyStrength: 12,
+        enemyTypes: {
+            BloodEye: { cls: BloodEye, weight: 50 },
+            BloodThrall: { cls: BloodThrall, weight: 50 },
+        },
         next: { up: "blood24" }
     },
     blood24: {
@@ -1379,6 +1494,9 @@ const levels = {
         enemiesPerWave: 55,
         enemyHealth: 35,
         enemyStrength: 13.5,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 100}
+        },
         next: { up: "blood25" }
     },
     blood25: {
@@ -1390,6 +1508,13 @@ const levels = {
         enemiesPerWave: 30,
         enemyHealth: 40,
         enemyStrength: 15,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 10 },
+            BloodEye: { cls: BloodEye, weight: 10 },
+            BloodTurret: { cls: BloodTurret, weight: 25 },
+            Ram: { cls: Ram, weight: 25 },
+            BloodThrall: { cls: BloodThrall, weight: 30 },
+        },
         next: {}
     },
     combat1: {
@@ -1400,7 +1525,9 @@ const levels = {
         enemiesPerWave: 5,
         enemyHealth: 5,
         enemyStrength: 10,
-        unlocks: ["swordUpgrade"],
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 90 },
+        },
         next: { right: "combat2" }
     },
     combat2: {
@@ -1656,6 +1783,9 @@ const levels = {
         enemiesPerWave: 4,
         enemyHealth: 4,
         enemyStrength: 1,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 90 },
+        },
         next: { left: "peace2" }
     },
     peace2: {
@@ -2158,10 +2288,248 @@ const levels = {
         enemyStrength: 18,
         bosses: 10,
         next: {}
-    }    
+    }
     
 };
 let curLvl = levels["start"];
+
+function generateMoonCraters(radius) {
+    moonCraters.length = 0;
+    const craterCount = Math.floor(radius * 0.8);
+    for (let i = 0; i < craterCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = Math.random() * radius * 0.9;
+        const craterRadius = Math.random() * (radius * 0.15);
+        moonCraters.push({
+            x: Math.cos(angle) * dist,
+            y: Math.sin(angle) * dist,
+            r: craterRadius
+        });
+    }
+}
+// Call once at the start
+generateMoonCraters(40);
+
+
+function chooseWeather() {
+    if (choosedNextWeather) return;
+    if (isDay) {
+        choosedNextWeather = true;
+        return dayEvents[Math.floor(Math.random() * dayEvents.length)];
+    }
+    else if (!isDay) {
+        choosedNextWeather = true;
+        return nightEvents[Math.floor(Math.random() * nightEvents.length)];
+    }
+}
+
+function drawWeather(state, deltaTime) {
+    const skyArcHeight = canvas.height - 75;
+    const bottomOffset = 50;
+
+    if (state === "day") {
+        const radius = 40;
+        const t = timeOfDay;
+        const sunX = t * canvas.width;
+        const sunY = canvas.height - bottomOffset - Math.sin(t * Math.PI) * skyArcHeight;
+        drawSun(sunX, sunY, radius, performance.now());
+    } 
+    else if (state === "night") {
+        const radius = 50;
+        const t = timeOfDay - 1;
+        const moonX = t * canvas.width;
+        const moonY = canvas.height - bottomOffset - Math.sin(t * Math.PI) * skyArcHeight;
+        drawMoon(moonX, moonY, radius);
+    }
+    else if (state === "bloodmoon") {
+        const radius = 60;
+        const t = timeOfDay - 1;
+        const moonX = t * canvas.width;
+        const moonY = canvas.height - bottomOffset - Math.sin(t * Math.PI) * skyArcHeight;
+        drawBloodMoon(moonX, moonY, radius);
+    }
+}
+
+function drawSky() {
+    let topColor, bottomColor, t;
+
+    if (timeOfDay < 0.5) {
+        // Sunrise: t = 0 → 1
+        t = timeOfDay / 0.5;
+        topColor = lerpColor("#000022", "#87ceeb", t);    // dark → light blue
+        bottomColor = lerpColor("#330000", "#ffa07a", t); // dark red → orange
+    } else if (timeOfDay < 1) {
+        // Day: t = 0 → 1
+        t = (timeOfDay - 0.5) / 0.5;
+        topColor = lerpColor("#87ceeb", "#87ceeb", t);    // stays light blue
+        bottomColor = lerpColor("#ffa07a", "#87ceeb", t); // transition to blue
+    } else if (timeOfDay < 1.5) {
+        // Sunset: t = 0 → 1
+        t = (timeOfDay - 1) / 0.5;
+        topColor = lerpColor("#87ceeb", "#000022", t);    // day → night
+        bottomColor = lerpColor("#87ceeb", "#330000", t); // light → dark
+    } else {
+        // Night: t = 0 → 1
+        t = (timeOfDay - 1.5) / 0.5;
+        topColor = lerpColor("#000022", "#000011", t);    // dark → darker
+        bottomColor = lerpColor("#330000", "#000011", t); // dark → darker
+    }
+
+    // Draw linear gradient sky
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, topColor);
+    gradient.addColorStop(1, bottomColor);
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function lerpColor(a, b, t) {
+    // a and b are strings like "#RRGGBB"
+    const ah = parseInt(a.slice(1), 16);
+    const ar = (ah >> 16) & 0xff;
+    const ag = (ah >> 8) & 0xff;
+    const ab = ah & 0xff;
+
+    const bh = parseInt(b.slice(1), 16);
+    const br = (bh >> 16) & 0xff;
+    const bg = (bh >> 8) & 0xff;
+    const bb = bh & 0xff;
+
+    const rr = Math.round(ar + (br - ar) * t);
+    const rg = Math.round(ag + (bg - ag) * t);
+    const rb = Math.round(ab + (bb - ab) * t);
+
+    return `rgb(${rr},${rg},${rb})`;
+}
+
+function drawMoon(x, y, radius, time) {
+    ctx.save();
+    ctx.translate(x, y);
+
+    ctx.rotate(time * 0.0005);
+
+    const gradient = ctx.createRadialGradient(0, 0, radius * 0.1, 0, 0, radius);
+    gradient.addColorStop(0, "#dddddd"); 
+    gradient.addColorStop(1, "#888888");
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    for (const crater of moonCraters) {
+        ctx.beginPath();
+        ctx.arc(crater.x, crater.y, crater.r, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(100,100,100,0.6)";
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(crater.x - crater.r*0.3, crater.y - crater.r*0.3, crater.r*0.5, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(150,150,150,0.3)";
+        ctx.fill();
+    }
+    ctx.restore();
+}
+
+function drawBloodMoon(x, y, radius) {
+    ctx.save();
+    ctx.translate(x, y);
+
+    // ---- Draw blood moon body ----
+    const gradient = ctx.createRadialGradient(0, 0, radius * 0.05, 0, 0, radius * 1.2);
+    gradient.addColorStop(0, "#8b0000"); // deep red center
+    gradient.addColorStop(0.4, "#cc0000"); // brighter core
+    gradient.addColorStop(1, "#220000"); // dark red/black edge
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // ---- Strong red glow around moon ----
+    ctx.beginPath();
+    ctx.shadowBlur = radius * 2.2;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.shadowColor = "#ff0000";
+    ctx.arc(0, 0, radius * 1.05, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Disable shadow so craters don't glow
+    ctx.shadowBlur = 0;
+
+    // ---- Optional silhouette dark patches (not random, so it stays still) ----
+    const patchCount = Math.floor(radius * 0.3);
+    for (let i = 0; i < patchCount; i++) {
+        const px = (i * 37) % (radius * 1.3) - radius * 0.65;
+        const py = (i * 91) % (radius * 1.3) - radius * 0.65;
+        const pr = radius * 0.15;
+
+        ctx.beginPath();
+        ctx.arc(px, py, pr, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0,0,0,0.25)";
+        ctx.fill();
+    }
+
+    // ---- Fixed craters, same array as moon, but recolored red ----
+    for (const crater of moonCraters) {
+        // dark crater base
+        ctx.beginPath();
+        ctx.arc(crater.x, crater.y, crater.r, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(30,0,0,0.7)";
+        ctx.fill();
+
+        // faint highlight for depth
+        ctx.beginPath();
+        ctx.arc(crater.x - crater.r * 0.2, crater.y - crater.r * 0.2, crater.r * 0.4, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(80,10,10,0.4)";
+        ctx.fill();
+    }
+
+    ctx.restore();
+}
+
+function drawSun(x, y, radius, time) {
+    ctx.save();
+    ctx.translate(x, y);
+    // ----- Rotate rays -----
+    // time = performance.now() or your own timer
+    ctx.rotate(time * 0.001); // slow rotation
+    // ----- Draw rays -----
+    const rayCount = 12;
+    const rayLength = radius * 1.6;
+    const rayWidth = radius * 0.25;
+    ctx.strokeStyle = "yellow";
+    ctx.lineWidth = rayWidth;
+    ctx.lineCap = "round";
+
+    for (let i = 0; i < rayCount; i++) {
+        const angle = (Math.PI * 2 * i) / rayCount;
+        const x1 = Math.cos(angle) * (radius + rayWidth);
+        const y1 = Math.sin(angle) * (radius + rayWidth);
+        const x2 = Math.cos(angle) * (rayLength);
+        const y2 = Math.sin(angle) * (rayLength);
+
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
+    }
+    ctx.restore();
+    // ----- Draw sun ball on top -----
+    ctx.save();
+    ctx.translate(x, y);
+
+    const gradient = ctx.createRadialGradient(0,0, radius * 0.2, 0,0, radius);
+    gradient.addColorStop(0, "#fffed1");
+    gradient.addColorStop(1, "yellow");
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+}
 
 function spawnDoors() {
     doors.length = 0;
@@ -2220,8 +2588,7 @@ function drawDoors() {
       ctx.lineWidth = 4;
       ctx.strokeStyle = "white";
       ctx.strokeRect(door.x - door.size/2, door.y - door.size/2, door.size, door.size);
-  
-      // small label
+      
       ctx.font = "16px Arial";
       ctx.textAlign = "center";
       ctx.fillStyle = "white";
@@ -2286,12 +2653,11 @@ function drawDoorInteractionUI() {
 }
 
 function changeLevel(path) {
-    playerPath = path;
     console.log(`Path chosen: ${path}`);
     loadLevel(path);
 }
 
-function loadLevel(path) {
+function loadLevel(path) {  
     for (const w of player.inventory) w.clearProjectiles();
 
     drops = [];
@@ -2310,7 +2676,6 @@ function loadLevel(path) {
     wavesCompleted = 0;
     levelComplete = false;
     waveComplete = false;
-    enemyCounter = 0;
     enemies.length = 0;
     showDoors = false;
     doors.length = 0;
@@ -2326,12 +2691,10 @@ function loadLevel(path) {
         thisLevelWaves = curLvl.waves;
         let min = curLvl.enemiesPerWave - 3;
         let max = curLvl.enemiesPerWave + 4;
-        thisWaveEnemies = Math.floor(Math.random() * (max - min + 1)) + min;
+        thisWaveEnemies = Math.max(1, Math.floor(Math.random() * (max - min + 1)) + min);
         thisLevelHealthMin = curLvl.enemyHealth * multi
         thisLevelHealthMax = Math.ceil(curLvl.enemyHealth * multi * 0.8);
         
-    
-        enemiesRemainingInWave = thisWaveEnemies;
         spawnWave();
     } else {    
         thisLevelWaves = curLvl.waves;
@@ -2340,13 +2703,19 @@ function loadLevel(path) {
         thisWaveEnemies = Math.floor(Math.random() * (max - min + 1)) + min;
         thisLevelHealthMin = curLvl.enemyHealth * multi
         thisLevelHealthMax = Math.ceil(curLvl.enemyHealth * multi * multi * 0.8);
-        if (curLvl.bosses) {
-            thisLevelBosses = curLvl.bosses; 
-        }
-        else thisLevelBosses = 0;
     
-        enemiesRemainingInWave = thisWaveEnemies;
         spawnWave();
+    }
+}
+
+function getRandomEnemy(enemyDict) {
+    const entries = Object.values(enemyDict);
+    const totalWeight = entries.reduce((sum, e) => sum + e.weight, 0);
+    let rand = Math.random() * totalWeight;
+
+    for (const e of entries) {
+        if (rand < e.weight) return e.cls;  // RETURN THE CLASS
+        rand -= e.weight;
     }
 }
 
@@ -2368,8 +2737,10 @@ async function spawnWave() {
         case 3: x = -20; y = Math.random() * canvas.height; break;
       }
   
+      const selectedEnemy = getRandomEnemy(curLvl.enemyTypes);
       thisHP = Math.floor(Math.random() * (thisLevelHealthMax - thisLevelHealthMin + 1)) + thisLevelHealthMin;
-      enemies.push(new Enemy(x, y, 1, 3, thisHP, player, curLvl.enemyStrength));
+      if (thisHP <= 0) thisHP = thisLevelHealthMin;
+      enemies.push(new selectedEnemy(x, y, 1, 4, thisHP, player, curLvl.enemyStrength, weatherMulti, enemies));
     }
     if (wavesCompleted >= curLvl.waves - 1) {
         if (!curLvl.bosses || curLvl.bosses <= 0) return; //no bosses
@@ -2377,7 +2748,7 @@ async function spawnWave() {
         for (let i = 0; i < curLvl.bosses; i++ ) {
             let multi = Math.random();
             while (multi <= 0.5) multi = Math.random();
-            enemies.push(new Boss1(canvas.width * Math.random(), canvas.height * Math.random(), 1, 3, (thisHP * player.level * 3 + 50) * multi, player, curLvl.enemyStrength));
+            enemies.push(new Boss1(canvas.width * Math.random(), canvas.height * Math.random(), 1, 3, (thisHP * player.level * 3 + 50) * multi, player, curLvl.enemyStrength, weatherMulti, enemies));
         }
         showBossLabel();
     }
@@ -2402,19 +2773,19 @@ async function updateWaveSystem() {
     if (levelComplete && !showDoors) {
         level += 1;
 
-        item = curLvl.unlocks;
-        if (item) {
-            console.log(`unlocked${item}!`);
-            if (item === "VampireFang") {
-                unlockedVampireFang = true;
-                showCutscene = true;
-                console.log(showCutscene)
-                console.log("unlocked fang");
-            }
-            if (item === "VampireCloak") {
-                unlockedVampireCloak = true;
-            }
-        }
+        // item = curLvl.unlocks;
+        // if (item) {
+        //     console.log(`unlocked${item}!`);
+        //     if (item === "VampireFang") {
+        //         unlockedVampireFang = true;
+        //         showCutscene = true;
+        //         console.log(showCutscene)
+        //         console.log("unlocked fang");
+        //     }
+        //     if (item === "VampireCloak") {
+        //         unlockedVampireCloak = true;
+        //     }
+        // }
 
         if (curLvl.next && Object.keys(curLvl.next).length > 0) {
           showDoors = true;
@@ -2424,7 +2795,6 @@ async function updateWaveSystem() {
           console.log(`No next levels found for ${curLvl.id}`);
         }
 
-        levelComplete = false;
         drawWeapons = false;
     }
     return item;
@@ -2862,15 +3232,31 @@ async function drawTimer() {
         String(seconds).padStart(2, "0") + ":" +
         String(Mseconds).padStart(2, "0");
 
-    // Set text style
+    if (timeOfDay < 1.3 && timeOfDay > 0.3) ctx.fillStyle = "black";
+    else ctx.fillStyle = "white";
     ctx.font = "30px Arial";
-    ctx.fillStyle = "black";
     ctx.textAlign = "center";   // center horizontally
     ctx.textBaseline = "top";   // top alignment
 
     // Draw text at top center of canvas
     ctx.fillText(timeText, canvas.width / 2, 30);
     await sleep(10);
+}
+
+function drawVignette(alpha) {
+    const w = canvas.width;
+    const h = canvas.height;
+    const gradient = ctx.createRadialGradient(
+        w/2, h/2, 0,
+        w/2, h/2, Math.max(w, h) * 0.7
+    );
+    gradient.addColorStop(0, "rgba(0,0,0,0)");
+    gradient.addColorStop(1, `rgba(0,0,0,${alpha})`);
+
+    ctx.save();
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
 }
 
 function drawRedVignette(alpha) {
@@ -2928,35 +3314,107 @@ function drawAttributes() {
     drawTimer();
 }
 
-function updateAttributes(deltaTime, enemies) {
+function updateAttributes(deltaTime) {
     for (const weapon of player.inventory) {
         weapon.update(deltaTime, enemies, canvas);
     }
 }
 
+function drawDarkness(alpha) {
+    const lightRadius = 200;
+
+    ctx.save();
+
+    // --- Draw full screen darkness first ---
+    ctx.fillStyle = "black";
+    ctx.globalAlpha = alpha;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // --- Punch OUT a circle so the inside stays visible ---
+    ctx.globalCompositeOperation = "destination-out";
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, lightRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
 function gameLoop(time) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const deltaTime = time - lastTime;
-    lastTime = time;
-    if (!paused) difCounter += (1 / (1 + difficulty * 500)) * 0.00001;
+    drawSky();   
+
     if (!player.alive) {
         drawRedDeath();
         return;
     }
 
-    
+    const deltaTime = time - lastTime;
+    lastTime = time;
 
+    let num = deltaTime / thisDayLen;
+    if (!isNaN(num) && !paused && !levelComplete) timeOfDay += deltaTime / thisDayLen;
+    if (timeOfDay > 1) { //means one day cycle has passed...
+        isDay = false;
+    }
+    if (timeOfDay > 2) { //means one day/night cycle has passed...
+        timeOfDay = 0;
+        isDay = true;
+    }
+    if (isDay) {
+        weatherState = "day";
+        weatherMulti = 1;
+    }
+    if (!isDay) {
+        weatherState = "night";
+        weatherMulti = 1.5;
+    }
     let item = updateWaveSystem();
-    if (showCutscene && !paused && item) unlockCutscene(item);      //TODO: MAKE IT WORK!
-    showCutscene = true;
-    drawDoors();
-    checkDoorInteraction();
+    // if (showCutscene && !paused && item) unlockCutscene(item);      // MAKE IT WORK!
+    // showCutscene = true;
 
-    if (player.previousLevel == player.level) {
+    if (player.previousLevel === player.level) {
         player.level += 1;
         paused = true;
         getOptions();
+    }
+
+    let nightT = 0;
+    if (timeOfDay > 1 && timeOfDay < 2) {
+        nightT = (timeOfDay - 1);
+        // Fade back out during last 25% of night
+        if (nightT > 0.75) nightT = 1 - ((nightT - 0.75) / 0.25);
+    }
+    
+    nightT = 1 - Math.pow(1 - nightT, 3);
+    if (nightT > 0) {
+        drawDarkness(nightT);
+        drawVignette(nightT);
+    }
+    
+
+    drawDoors();
+    checkDoorInteraction();
+
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        let e = enemies[i];
+      
+        if (!paused) {
+            e.update(deltaTime, canvas, weatherMulti);
+        }
+        const dist = Math.hypot(e.x - player.x, e.y - player.y);
+        if (timeOfDay > 0.03 && timeOfDay <= 1) {
+            e.draw(ctx);
+            e.showHealth(ctx);
+        } else if (dist < 200) {
+            e.draw(ctx);
+            e.showHealth(ctx);
+        }        
+
+        if (!e.alive) {
+            e.spawnDrops(drops);
+            enemies.splice(i, 1);
+        }
     }
 
     player.draw(ctx)
@@ -2964,21 +3422,6 @@ function gameLoop(time) {
     if (paused === false) {
         player.update(canvas, deltaTime, enemies);
         player.checkCollision(enemies, drops);
-    }
-
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        let e = enemies[i];
-      
-        if (!paused) {
-            e.update(player, deltaTime);
-        }
-        e.draw(ctx);
-        e.showHealth(ctx);
-
-        if (!e.alive) {
-            e.spawnDrops(drops);
-            enemies.splice(i, 1);
-        }
     }
 
     for (const ammo of ammos) {
@@ -3007,8 +3450,9 @@ function gameLoop(time) {
     }
     else if (lastPlayerHealth < player.health) {
         lastPlayerHealth = player.health;
-
     }
+    drawWeather(weatherState, deltaTime);
+
 
     drawDoorInteractionUI();
     drawWaveLabel();
@@ -3034,7 +3478,7 @@ canvas.addEventListener("mousemove", function(e) {
 });
 // handle spacebar shooting: only fire one per press
 window.addEventListener("keydown", function(e) {
-    if (e.code === "Space") {
+    if (e.code === "Space" && !paused) {
         // Calculate direction from player center towards mouse
         const fromX = player.x + player.width / 2;
         const fromY = player.y + player.height / 2;

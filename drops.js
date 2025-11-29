@@ -40,7 +40,7 @@ export class Drop {
 
 
 
-export class Emerald extends Drop {
+export class Diamond extends Drop {
   constructor(x, y) {
     super(x, y, "emerald");
   }
@@ -89,6 +89,72 @@ export class Emerald extends Drop {
   }
 }
 
+export class Emerald extends Drop {
+  constructor(x, y) {
+    super(x, y, "emerald");
+  }
+
+  update(player) {
+    super.update(player);
+  }
+
+  draw(ctx) {
+    ctx.save();
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+  
+    const size = this.radius * 1.5;
+  
+    const gradient = ctx.createRadialGradient(
+      this.x, this.y,
+      size * 0.1,
+      this.x, this.y,
+      size
+    );
+  
+    // aqua glow
+    ctx.shadowColor = "#00E6FF";
+    ctx.shadowBlur = 5;
+  
+    // blue-green gradient
+    gradient.addColorStop(0, "#AAFFAA");   // bright minty center
+    gradient.addColorStop(0.5, "#00DD55"); // vivid emerald green
+    gradient.addColorStop(1, "#006633");   // deep dark green edge    
+  
+    // -------- OCTAGON POINTS --------
+    const s = size;
+    const p = [
+      [this.x,        this.y - s],        // top
+      [this.x + s*0.7, this.y - s*0.7],   // top-right
+      [this.x + s,     this.y],           // right
+      [this.x + s*0.7, this.y + s*0.7],   // bottom-right
+      [this.x,        this.y + s],        // bottom
+      [this.x - s*0.7, this.y + s*0.7],   // bottom-left
+      [this.x - s,     this.y],           // left
+      [this.x - s*0.7, this.y - s*0.7]    // top-left
+    ];
+  
+    ctx.beginPath();
+    ctx.moveTo(p[0][0], p[0][1]);
+    for (let i = 1; i < p.length; i++) {
+      ctx.lineTo(p[i][0], p[i][1]);
+    }
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+  
+    // ------- SHINY HIGHLIGHT -------
+    ctx.strokeStyle = "rgba(255,255,255,0.6)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(this.x - s*0.4, this.y - s*0.3);
+    ctx.lineTo(this.x + s*0.2, this.y - s*0.6);
+    ctx.stroke();
+  
+    ctx.restore();
+  }  
+  
+}
 
 export class Ruby extends Drop {
   constructor(x, y) {
