@@ -4,6 +4,8 @@ import { BloodEye } from "./enemy.js";
 import { BloodTurret } from "./enemy.js";
 import { Ram } from "./enemy.js";
 import { BloodThrall } from "./enemy.js";
+import { SleepySlime } from "./enemy.js";
+import { Wall } from "./enemy.js";
 import { Boss1 } from "./enemy.js";
 import { Ammo } from "./ammo.js";
 import { MagicWand } from "./weapons.js";
@@ -29,6 +31,14 @@ levelUpMenu.style.display = "none"
 let unlockedVampireFang = true;
 let unlockedVampireCloak = false;
 
+const enemyTypes = {
+    Shard: { cls: Shard, weight: 50 },
+    BloodEye: { cls: BloodEye, weight: 100 },
+    BloodThrall: { cls: BloodThrall, weight: 100},
+    Ram: { cls: Ram, weight: 100},
+    BloodTurret: { cls: BloodTurret, weight: 100},
+    SleepySlime: { cls: SleepySlime, weight: 50 }
+}
 
 //#region buttons
 const buyMagicWand = document.getElementById("buyMagicWand");
@@ -140,6 +150,29 @@ const upgradeBloodLeach6 = document.getElementById("upgradeBloodLeach6");
 const upgradeBloodLeach7 = document.getElementById("upgradeBloodLeach7");
 const upgradeBloodLeach8 = document.getElementById("upgradeBloodLeach8");
 const upgradeBloodLeach9 = document.getElementById("upgradeBloodLeach9");
+// ===  Mending! / Regen ===
+const buyRegen = document.getElementById("buyRegen");
+const upgradeRegen1 = document.getElementById("upgradeRegen1");
+const upgradeRegen2 = document.getElementById("upgradeRegen2");
+const upgradeRegen3 = document.getElementById("upgradeRegen3");
+const upgradeRegen4 = document.getElementById("upgradeRegen4");
+const upgradeRegen5 = document.getElementById("upgradeRegen5");
+const upgradeRegen6 = document.getElementById("upgradeRegen6");
+const upgradeRegen7 = document.getElementById("upgradeRegen7");
+const upgradeRegen8 = document.getElementById("upgradeRegen8");
+const upgradeRegen9 = document.getElementById("upgradeRegen9");
+// === Vitality / Hollow Heart ===
+const buyVitality = document.getElementById("buyVitality");
+const upgradeVitality1 = document.getElementById("upgradeVitality1");
+const upgradeVitality2 = document.getElementById("upgradeVitality2");
+const upgradeVitality3 = document.getElementById("upgradeVitality3");
+const upgradeVitality4 = document.getElementById("upgradeVitality4");
+const upgradeVitality5 = document.getElementById("upgradeVitality5");
+const upgradeVitality6 = document.getElementById("upgradeVitality6");
+const upgradeVitality7 = document.getElementById("upgradeVitality7");
+const upgradeVitality8 = document.getElementById("upgradeVitality8");
+const upgradeVitality9 = document.getElementById("upgradeVitality9");
+
 //#endregion
 
 let buttons = [
@@ -240,8 +273,29 @@ let buttons = [
     upgradeBloodLeach6,
     upgradeBloodLeach7,
     upgradeBloodLeach8,
-    upgradeBloodLeach9
+    upgradeBloodLeach9,
+    buyRegen,
+    upgradeRegen1,
+    upgradeRegen2,
+    upgradeRegen3,
+    upgradeRegen4,
+    upgradeRegen5,
+    upgradeRegen6,
+    upgradeRegen7,
+    upgradeRegen8,
+    upgradeRegen9,
+    buyVitality,
+    upgradeVitality1,
+    upgradeVitality2,
+    upgradeVitality3,
+    upgradeVitality4,
+    upgradeVitality5,
+    upgradeVitality6,
+    upgradeVitality7,
+    upgradeVitality8,
+    upgradeVitality9
 ]; 
+
 
 function loadButtons() {
     resetBtn.addEventListener("click", () => {
@@ -1053,13 +1107,157 @@ function loadButtons() {
         if (leach) leach.level = 10;
         console.log("Upgraded Blood Leach to Level 10! (MAX)");
         buttons = buttons.filter(b => b !== upgradeBloodLeach9);
+    });
+    buyRegen.addEventListener("click", () => {
+        player.regenLevel = 1;
+        console.log("Bought Mending/Regeneration!");
+        buttons = buttons.filter(b => b !== buyRegen);
+        buttons.push(upgradeRegen1);
+    });
+
+    upgradeRegen1.addEventListener("click", () => {
+        player.regenLevel = 2;
+        console.log("Upgraded Regeneration to Level 2!");
+        buttons = buttons.filter(b => b !== upgradeRegen1);
+        buttons.push(upgradeRegen2);
+    });
+
+    upgradeRegen2.addEventListener("click", () => {
+        player.regenLevel = 3;
+        console.log("Upgraded Regeneration to Level 3!");
+        buttons = buttons.filter(b => b !== upgradeRegen2);
+        buttons.push(upgradeRegen3);
+    });
+
+    upgradeRegen3.addEventListener("click", () => {
+        player.regenLevel = 4;
+        console.log("Upgraded Regeneration to Level 4!");
+        buttons = buttons.filter(b => b !== upgradeRegen3);
+        buttons.push(upgradeRegen4);
+    });
+
+    upgradeRegen4.addEventListener("click", () => {
+        player.regenLevel = 5;
+        console.log("Upgraded Regeneration to Level 5!");
+        buttons = buttons.filter(b => b !== upgradeRegen4);
+        buttons.push(upgradeRegen5);
+    });
+
+    upgradeRegen5.addEventListener("click", () => {
+        player.regenLevel = 6;
+        console.log("Upgraded Regeneration to Level 6!");
+        buttons = buttons.filter(b => b !== upgradeRegen5);
+        buttons.push(upgradeRegen6);
+    });
+
+    upgradeRegen6.addEventListener("click", () => {
+        player.regenLevel = 7;
+        console.log("Upgraded Regeneration to Level 7!");
+        buttons = buttons.filter(b => b !== upgradeRegen6);
+        buttons.push(upgradeRegen7);
+    });
+
+    upgradeRegen7.addEventListener("click", () => {
+        player.regenLevel = 8;
+        console.log("Upgraded Regeneration to Level 8!");
+        buttons = buttons.filter(b => b !== upgradeRegen7);
+        buttons.push(upgradeRegen8);
+    });
+
+    upgradeRegen8.addEventListener("click", () => {
+        player.regenLevel = 9;
+        console.log("Upgraded Regeneration to Level 9!");
+        buttons = buttons.filter(b => b !== upgradeRegen8);
+        buttons.push(upgradeRegen9);
+    });
+
+    upgradeRegen9.addEventListener("click", () => {
+        player.regenLevel = 10;
+        console.log("Upgraded Regeneration to Level 10! (MAX)");
+        buttons = buttons.filter(b => b !== upgradeRegen9);
         // No further upgrades, keep as end-point.
     });
+    buyVitality.addEventListener("click", () => {
+        player.vitalityLevel = 1;
+        console.log("Bought Vitality! (Level 1)");
+        buttons = buttons.filter(b => b !== buyVitality);
+        buttons.push(upgradeVitality1);
+        player.maxHealth += 10;
+    });
+
+    upgradeVitality1.addEventListener("click", () => {
+        player.vitalityLevel = 2;
+        console.log("Upgraded Vitality to Level 2!");
+        buttons = buttons.filter(b => b !== upgradeVitality1);
+        buttons.push(upgradeVitality2);
+        player.maxHealth += 10;
+    });
+
+    upgradeVitality2.addEventListener("click", () => {
+        player.vitalityLevel = 3;
+        console.log("Upgraded Vitality to Level 3!");
+        buttons = buttons.filter(b => b !== upgradeVitality2);
+        buttons.push(upgradeVitality3);
+        player.maxHealth += 20;
+    });
+
+    upgradeVitality3.addEventListener("click", () => {
+        player.vitalityLevel = 4;
+        console.log("Upgraded Vitality to Level 4!");
+        buttons = buttons.filter(b => b !== upgradeVitality3);
+        buttons.push(upgradeVitality4);
+        player.maxHealth += 20;
+    });
+
+    upgradeVitality4.addEventListener("click", () => {
+        player.vitalityLevel = 5;
+        console.log("Upgraded Vitality to Level 5!");
+        buttons = buttons.filter(b => b !== upgradeVitality4);
+        buttons.push(upgradeVitality5);
+        player.maxHealth += 25;
+    });
+
+    upgradeVitality5.addEventListener("click", () => {
+        player.vitalityLevel = 6;
+        console.log("Upgraded Vitality to Level 6!");
+        buttons = buttons.filter(b => b !== upgradeVitality5);
+        buttons.push(upgradeVitality6);
+        player.maxHealth += 25;
+    });
+
+    upgradeVitality6.addEventListener("click", () => {
+        player.vitalityLevel = 7;
+        console.log("Upgraded Vitality to Level 7!");
+        buttons = buttons.filter(b => b !== upgradeVitality6);
+        buttons.push(upgradeVitality7);
+        player.maxHealth += 25;
+    });
+
+    upgradeVitality7.addEventListener("click", () => {
+        player.vitalityLevel = 8;
+        console.log("Upgraded Vitality to Level 8!");
+        buttons = buttons.filter(b => b !== upgradeVitality7);
+        buttons.push(upgradeVitality8);
+        player.maxHealth += 50;
+    });
+
+    upgradeVitality8.addEventListener("click", () => {
+        player.vitalityLevel = 9;
+        console.log("Upgraded Vitality to Level 9!");
+        buttons = buttons.filter(b => b !== upgradeVitality8);
+        buttons.push(upgradeVitality9);
+        player.maxHealth += 75;
+    });
+
+    upgradeVitality9.addEventListener("click", () => {
+        player.vitalityLevel = 10;
+        console.log("Upgraded Vitality to Level 10! (MAX)");
+        buttons = buttons.filter(b => b !== upgradeVitality9);
+        player.maxHealth += 100;
+        // No further upgrades
+    });
 };
-
 loadButtons();
-
-
 
 
 function resizeCanvas() {
@@ -1069,7 +1267,7 @@ function resizeCanvas() {
 resizeCanvas();
 window.addEventListener("resize", resizeCanvas);
 let timeOfDay = 0.5;
-let thisDayLen = 40000 + Math.random() * 40000;
+let thisDayLen = Math.random() * (70000 - 50000) + 50000;
 // thisDayLen = 10000;
 let weatherState = "day";
 let isDay = true;
@@ -1078,20 +1276,30 @@ let lastWeatherEvent = "";
 let nextWeatherTime = 10000;
 let choosedNextWeather = false;
 let weatherMulti = 1;
+let lastSecond = 0;
+let monsterTimer = 0; //check how long the player stays in a level.
+let doorForceActive = false; //killer active?
+let doorBroken = false;
+let doorForceInterval = 0;
+let damageForceInterval = 0;
+let screenDimAlpha = 0;
+
 
 let dayEvents = ["day"];
 let nightEvents = [ "bloodmoon", "night"];
 const moonCraters = [];
 const enemies = [];
+
 const ammos = [];
 let drops = [];
 const doors = [];
+let doorPieces = [];
 const keys = { e: false };
 let showDoors = false;
 let paused = false;
 let pausedGame = false;
 let lastTime = performance.now();
-let timer = 0;
+let timer = 0;  
 let alpha = 0;
 let lastPlayerHealth = player.health;
 let level = 0;
@@ -1785,6 +1993,7 @@ const levels = {
         enemyStrength: 1,
         enemyTypes: {
             Shard: { cls: Shard, weight: 90 },
+            SleepySlime: { cls: SleepySlime, weight: 10 },
         },
         next: { left: "peace2" }
     },
@@ -1796,6 +2005,10 @@ const levels = {
         enemiesPerWave: 5,
         enemyHealth: 5,
         enemyStrength: 1,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 75 },
+            SleepySlime: { cls: SleepySlime, weight: 25 },
+        },
         next: { left: "peace3" }
     },
     peace3: {
@@ -1806,6 +2019,10 @@ const levels = {
         enemiesPerWave: 6,
         enemyHealth: 6,
         enemyStrength: 1.3,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 60 },
+            SleepySlime: { cls: SleepySlime, weight: 40 },
+        },
         next: { left: "peace4" }
     },
     peace4: {
@@ -1816,6 +2033,11 @@ const levels = {
         enemiesPerWave: 10,
         enemyHealth: 7,
         enemyStrength: 1.5,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 40 },
+            SleepySlime: { cls: SleepySlime, weight: 45 },
+            Wall: { cls: Wall, weight: 15 },
+        },
         next: { left: "peace5" }
     },
     peace5: {
@@ -1826,6 +2048,10 @@ const levels = {
         enemiesPerWave: 15,
         enemyHealth: 8,
         enemyStrength: 2,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 50 },
+            Wall: { cls: Wall, weight: 50 },
+        },
         next: { left: "peace6" }
     },
     peace6: {
@@ -1836,6 +2062,10 @@ const levels = {
         enemiesPerWave: 9,
         enemyHealth: 10,
         enemyStrength: 2.2,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 40 },
+            Wall: { cls: Wall, weight: 60 },
+        },
         next: { left: "peace7" }
     },
     peace7: {
@@ -1846,6 +2076,11 @@ const levels = {
         enemiesPerWave: 10,
         enemyHealth: 11,
         enemyStrength: 2.5,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 40 },
+            SleepySlime: { cls: SleepySlime, weight: 30 },
+            Wall: { cls: Wall, weight: 30 },
+        },
         next: { left: "peace8" }
     },
     peace8: {
@@ -1856,6 +2091,11 @@ const levels = {
         enemiesPerWave: 12,
         enemyHealth: 12,
         enemyStrength: 2.6,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 30 },
+            SleepySlime: { cls: SleepySlime, weight: 40 },
+            Wall: { cls: Wall, weight: 30 },
+        },
         next: { left: "peace9" }
     },
     peace9: {
@@ -1866,6 +2106,9 @@ const levels = {
         enemiesPerWave: 12,
         enemyHealth: 13,
         enemyStrength: 2.7,
+        enemyTypes: {
+            Wall: { cls: Wall, weight: 100 },
+        },
         next: { left: "peace10" }
     },
     peace10: {
@@ -1877,6 +2120,10 @@ const levels = {
         enemyHealth: 15,
         enemyStrength: 3,
         bosses: 1,
+        enemyTypes: {
+            SleepySlime: { cls: SleepySlime, weight: 50 },
+            Wall: { cls: Wall, weight: 50 },
+        },
         next: { left: "peace11" }
     },
     peace11: {
@@ -1887,6 +2134,9 @@ const levels = {
         enemiesPerWave: 14,
         enemyHealth: 16,
         enemyStrength: 3,
+        enemyTypes: {
+            Wall: { cls: Wall, weight: 100 },
+        },
         next: { left: "peace12" }
     },
     peace12: {
@@ -1897,6 +2147,9 @@ const levels = {
         enemiesPerWave: 15,
         enemyHealth: 17,
         enemyStrength: 3.2,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 100 },
+        },
         next: { left: "peace13" }
     },
     peace13: {
@@ -1907,6 +2160,11 @@ const levels = {
         enemiesPerWave: 15,
         enemyHealth: 18,
         enemyStrength: 3.3,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 30 },
+            SleepySlime: { cls: SleepySlime, weight: 40 },
+            Wall: { cls: Wall, weight: 30 },
+        },
         next: { left: "peace14" }
     },
     peace14: {
@@ -2537,9 +2795,9 @@ function spawnDoors() {
     if (curLvl.id === "start") {
         doorDefinitions = [
             { dir: "up", color: "orange", text: "blood"},      // red-ish (blood)
-            { dir: "right", color: "#FFB74D", text: "machinery"},   // orange (combat/machinery)
-            { dir: "down", color: "#6EC6FF", text: "combat"},    // blue (machinery/peace)
-            { dir: "left", color: "#90EE90", text: "peace"}   // green (peace)
+            // { dir: "right", color: "#FFB74D", text: "machinery"},   // orange (combat/machinery)
+            // { dir: "down", color: "#6EC6FF", text: "combat"},    // blue (machinery/peace)
+            // { dir: "left", color: "#90EE90", text: "peace"}   // green (peace)
         ];
     }
     else if (curLvl.path === "blood") {
@@ -2672,6 +2930,7 @@ function loadLevel(path) {
           }
         }
     }
+    monsterTimer = 0;
     drawWeapons = true;
     wavesCompleted = 0;
     levelComplete = false;
@@ -3007,6 +3266,26 @@ function isButtonValid(btn) {
     
         return targetLevel === leach.level;
     }
+
+    if (id.startsWith("upgradeRegen")) {
+        // If the player doesn't have Spinach yet, don't allow upgrade
+        if (player.regenLevel === undefined) return false;
+    
+        const match = id.match(/\d+$/);
+        const targetLevel = match ? parseInt(match[0]) : 1;
+    
+        return targetLevel === player.regenLevel;
+    }
+
+    if (id.startsWith("upgradeVitality")) {
+        // If the player doesn't have Spinach yet, don't allow upgrade
+        if (player.regenLevel === undefined) return false;
+    
+        const match = id.match(/\d+$/);
+        const targetLevel = match ? parseInt(match[0]) : 1;
+    
+        return targetLevel === player.regenLevel;
+    }
   
     // --- Handle buy buttons (always valid if not owned) ---
     if (id.startsWith("buyMagicWand")) {
@@ -3050,6 +3329,12 @@ function isButtonValid(btn) {
         if (!fang) return false;
         const maxFang = fang.level >= 9;
         return !player.inventory.find(w => w.constructor.name === "BloodLeach") && maxFang;
+    }
+    if (id.startsWith("buyRegen")) {
+        return player.regenLevel === 0; // can only buy once
+    }
+    if (id.startsWith("buyVitality")) {
+        return player.vitalityLevel === 0; // can only buy once
     }
     
   
@@ -3339,6 +3624,52 @@ function drawDarkness(alpha) {
     ctx.restore();
 }
 
+function showPlayerStats() {
+    ctx.fillStyle = "blue"; //health
+    ctx.font = "20px Arial";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText(`Health: ${player.health}`, 20, 35);
+    ctx.fillStyle = "darkblue"
+    ctx.fillText(`Max Health: ${player.maxHealth}`, 20, 65);
+    ctx.fillStyle = "darkgreen"
+    ctx.fillText(`Spinach: ${player.spinach}`, 20, 95);
+    ctx.fillStyle = "red"
+    ctx.fillText(`Lifesteal: ${player.lifeSteal}`, 20, 125);
+    ctx.fillStyle = "black"
+    ctx.fillText(`Magnet Strength: ${player.magnetStrength}`, 20, 155);
+    ctx.fillStyle = "purple"
+    ctx.fillText(`Regeneration: ${player.regenRate}`, 20, 185);
+    ctx.fillStyle = "magenta"
+    ctx.fillText(`XP Multiplier: ${player.xpMulti}`, 20, 215);
+    ctx.fillStyle = "lightgrey"
+    ctx.fillText(`Armor: ${player.armor}`, 20, 245);
+    ctx.fillStyle = "rgb(255, 247, 0)"
+    ctx.fillText(`Speed: ${player.baseSpeed}`, 20, 275);
+}
+
+function drawScreenDimmer() {
+    if (monsterTimer < 20) return; // ✅ only start dim after 10 seconds
+
+    let t = monsterTimer - 10;     // time spent *in dimming state*
+    let dimAmount = t / 20;        // 0 → 1 over next 20 seconds (10 sec → 30 sec)
+
+    dimAmount = Math.min(dimAmount, 1);
+
+    ctx.save();
+    ctx.globalAlpha = dimAmount * 0.75;
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+}
+
+function spawnMonsters() {
+    const selectedEnemy = getRandomEnemy(enemyTypes);
+    let thisHP = Math.floor(Math.random() * (98879565366446 - 34234542355 + 9999)) + 2185056343219;
+    if (thisHP <= 0) thisHP = 6767676767;
+    enemies.push(new selectedEnemy(canvas.width * Math.random(), canvas.height * Math.random(), 1, 4, thisHP, player, Math.random() * 16.7, weatherMulti, enemies));
+}
+
 function gameLoop(time) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -3348,9 +3679,72 @@ function gameLoop(time) {
         drawRedDeath();
         return;
     }
-
     const deltaTime = time - lastTime;
     lastTime = time;
+
+    if (doorForceActive && player.alive) {
+        if (Date.now() - damageForceInterval > 5) {
+            damageForceInterval = Date.now();
+            const dmg = Math.ceil(player.maxHealth * 0.01);
+            player.takeDamage(dmg); 
+            spawnMonsters();
+            spawnMonsters();
+            ctx.save();
+            ctx.font = "50px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            const msg = "I  W A R N E D  U )hElP)";
+            for (let i = 0; i < 8; i++) {
+                const offX = (Math.random() - 0.5) * 16;
+                const offY = (Math.random() - 0.5) * 16;
+                ctx.globalAlpha = 0.3 + Math.random() * 0.7;
+                ctx.fillText(msg.split("").join(Math.random() > 0.8 ? "░" : " "), canvas.width/2 + offX, canvas.height/2 + offY);
+            }
+
+            ctx.fillStyle = "red";
+            ctx.globalAlpha = 1;
+            ctx.fillText("I▒W▒X≈≈≈≈≈A▒R▒N▒E▒D▒Y▒0ooo▒U", canvas.width * Math.random(), canvas.height * Math.random());
+            ctx.fillText("ɪ̴ ̵ᴡ̶ᴀ̷ʀ̴ɴ̵ᴇ̶ᴅ̷ ̶ʏ̵ᴏ0ᴜ̶", canvas.width * Math.random(), canvas.height * Math.random());
+            ctx.fillText("█▓▒░ I ∑/* */RNED Y0U ░▒▓█", canvas.width * Math.random(), canvas.height * Math.random());
+            ctx.fillText("█▓▒░ ∆∆´helπ ░▒▓█", canvas.width * Math.random(), canvas.height * Math.random());
+            ctx.fillText("ɪits too laTe√√√:))))", canvas.width * Math.random(), canvas.height * Math.random());
+            ctx.font = "100px Arial"
+            ctx.fillStyle = "black"
+            ctx.fillText("HE(P", canvas.width / 2, canvas.height / 2);
+            if (Math.random() < 0.1) {
+                ctx.fillStyle = `rgb(${Math.floor(Math.random()*400-50)}, ${Math.floor(Math.random()*300)}, ${Math.floor(Math.random()*500)})`
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            ctx.restore();
+            // optional: playerHurtSound.play();
+        }
+    }
+    if (levelComplete) {
+        screenDimAlpha += 1/33;
+    }
+    if (Date.now() - lastSecond >= 1000 && !paused && !pausedGame) {    //TODO: whisper. dont stay too long
+        lastSecond = Date.now();
+        if (levelComplete) {
+            monsterTimer += 0.5;    //+= 0.5
+            monsterTimer = Math.min(monsterTimer, 45);
+        }
+        if (monsterTimer >= 40 && !doorForceActive) {   //>= 30 normally
+            doorForceActive = true;
+            doorBroken = false; // ensure it can break
+            doorForceInterval = Date.now();
+            damageForceInterval = Date.now();
+            console.log("Invisible force activated…");
+        }
+    }
+    // === invisible door breaking force ===
+    if (doorForceActive && !doorBroken) {
+        if (Date.now() - doorForceInterval >= 1250) {
+            doorBroken = true;
+            levelComplete = false; // optional if you want level to "end fully"
+            console.log("DOORS BROKEN! 💥");
+        }
+    }
 
     let num = deltaTime / thisDayLen;
     if (!isNaN(num) && !paused && !levelComplete) timeOfDay += deltaTime / thisDayLen;
@@ -3367,8 +3761,9 @@ function gameLoop(time) {
     }
     if (!isDay) {
         weatherState = "night";
-        weatherMulti = 1.5;
+        weatherMulti = 1.25; //Math.random * (1.5 - 1) + 1;
     }
+    console.log(weatherMulti);
     let item = updateWaveSystem();
     // if (showCutscene && !paused && item) unlockCutscene(item);      // MAKE IT WORK!
     // showCutscene = true;
@@ -3385,7 +3780,6 @@ function gameLoop(time) {
         // Fade back out during last 25% of night
         if (nightT > 0.75) nightT = 1 - ((nightT - 0.75) / 0.25);
     }
-    
     nightT = 1 - Math.pow(1 - nightT, 3);
     if (nightT > 0) {
         drawDarkness(nightT);
@@ -3393,8 +3787,23 @@ function gameLoop(time) {
     }
     
 
-    drawDoors();
-    checkDoorInteraction();
+    if (!doorBroken) {
+        drawDoors();
+        checkDoorInteraction();
+    }
+
+    for (const ammo of ammos) {
+        if (paused === false) {
+            ammo.update(canvas);
+            ammo.checkCollision(enemies);
+        }
+        const dist = Math.hypot(ammo.x - player.x, ammo.y - player.y);
+        if (timeOfDay > 0.03 && timeOfDay <= 1) {
+            ammo.draw(ctx);
+        } else if (dist < 200) {
+            ammo.draw(ctx);
+        }      
+    }
 
     for (let i = enemies.length - 1; i >= 0; i--) {
         let e = enemies[i];
@@ -3424,14 +3833,6 @@ function gameLoop(time) {
         player.checkCollision(enemies, drops);
     }
 
-    for (const ammo of ammos) {
-        if (paused === false) {
-            ammo.update(canvas);
-        }
-        ammo.draw(ctx);
-        ammo.checkCollision(enemies);
-    }
-
     for (const drop of drops) {
         drop.draw(ctx, time);
         if (paused === false) {
@@ -3457,6 +3858,8 @@ function gameLoop(time) {
     drawDoorInteractionUI();
     drawWaveLabel();
     drawBossLabel();
+    if (paused) showPlayerStats();
+    if (levelComplete || !doorForceActive) drawScreenDimmer();
 
     if (alpha > 0) alpha -= 0.06
     if (alpha <= 0) alpha = 0;

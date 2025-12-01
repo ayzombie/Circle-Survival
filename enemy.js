@@ -18,7 +18,7 @@ export class Shard {
         this.lastHit = Date.now()
         this.frosted = 0;   // level of frost effect (e.g., 1 = slight, 2 = heavy)
         this.frostTime = 0; // how long frost lasts (ms)
-        this.strength = Math.round(Math.random() * ((strength + 2) - (strength - 2)) + (strength - 2) * weatherMulti);
+        this.strength = Math.max(0.5, Math.random() * ((strength + 2) - (strength - 2)) + (strength - 2) * weatherMulti);
         this.dir = 1;
         this.weatherMulti = weatherMulti;
     }
@@ -26,6 +26,8 @@ export class Shard {
     update(deltaTime) { // pass deltaTime if you have it
         if (!this.alive) return;
         if (this.health <= 0) this.alive = false;
+
+        if (this.strength <= 0) console.log(this.strength)
 
         const dirX = this.x - this.lastX;
 
@@ -1189,13 +1191,11 @@ export class SleepySlime {
 
     update(deltaTime) {
         if (!this.alive) return;
-
         // --- DIRECTION TRACKING (like Shard1) ---
         const dirX = this.x - this.lastX;
         if (dirX > 0) this.dir = 1;
         else if (dirX < 0) this.dir = -1;
         this.lastX = this.x;
-
         // --- FROST HANDLING ---
         if (this.frostTime > 0) {
             this.frostTime -= deltaTime;
@@ -1205,12 +1205,10 @@ export class SleepySlime {
             this.frosted = 0;
             this.stepSpeed = this.baseStepSpeed;
         }
-
         // --- PULSATE SIZE ---
         this.pulseTime += deltaTime / 1000;
         this.currentSize = this.size + Math.sin(this.pulseTime * 3) * 3;
         this.radius = this.currentSize / 1.5; // ✅ keeps collision scaling
-
         // --- STEP TOWARDS PLAYER ---
         if (this.moving) {
             const dx = this.player.x - this.x;
@@ -1307,6 +1305,313 @@ export class SleepySlime {
 
     spawnDrops(drops) {
         drops.push(new Diamond(this.x, this.y));
+    }
+}
+
+export class Wall {
+    constructor(x, y, minSpeed, maxSpeed, health, player, strength, weatherMulti) {
+        this.player = player;
+        this.x = x;
+        this.y = y;
+        this.width = Math.random() * (200 - 10) + 10;
+        this.height = this.width
+        this.wallWidth = this.width;
+        this.wallHeight = this.height;
+        this.size = this.wallWidth;
+        this.currentSize = this.size;
+        this.baseSpeed = Math.random() * (0.01 - 0.001) + 0.001;
+        this.speed = this.baseSpeed; // slow creep speed
+        this.dir = 1;
+        this.stopDist = 200;
+        this.pushStrength = 3;
+        this.moving = true;
+        this.lastX = x;
+        this.health = Math.max(health, Math.ceil(health * weatherMulti * (Math.random() * 15)));
+        this.strength = Number((Math.max(0.1, Math.random() * 4 + (strength - 2)) * weatherMulti).toFixed(1));
+        this.alive = true;
+        this.frosted = 0;
+        this.frostTime = 0;
+        this.pulseTime = 0;
+        this.opacity = 0;
+        this.paused = false;
+    }
+
+    update(deltaTime) {
+        if (!this.alive || !this.player) return;
+
+        if (this.frostTime > 0) {
+            this.frostTime -= deltaTime;
+            const slowFactor = Math.min(this.frosted * 0.2, 0.9);
+            this.speed = this.baseSpeed * (1 - slowFactor);
+        } else {
+            this.frosted = 0;
+            this.speed = this.baseSpeed;
+        }
+        // Direction tracking
+        const dx = this.x - this.lastX;
+        if (dx > 0) this.dir = 1;
+        else if (dx < 0) this.dir = -1;
+        this.lastX = this.x;
+        // Move in steps: 100px → pause 1s → repeat
+        if (!this.paused) {
+            const stepDist = Math.hypot(this.player.x - this.x, this.player.y - this.y);
+            const angle = Math.atan2(this.player.y - this.y, this.player.x - this.x);
+    
+            this.x += Math.cos(angle) * 200 * this.speed * deltaTime;
+            this.y += Math.sin(angle) * 200 * this.speed * deltaTime;
+    
+            if (stepDist <= this.stopDist) {
+                this.paused = true;
+                this.lastPause = Date.now();
+            }
+        } else {
+            if (Date.now() - this.lastPause >= Math.random() * (1500 - 200) + 200) {
+                this.paused = false;
+            }
+        }
+        // Push player if blocking (no damage)
+        const dist = Math.hypot(this.player.x - this.x, this.player.y - this.y);
+        if (dist < this.radius + this.player.radius) {
+            this.player.x -= this.pushStrength * this.dir;
+        }
+        // Pulsate size (optional personality)
+        this.pulseTime += deltaTime / 1000;
+        this.currentSize = this.size + Math.sin(this.pulseTime * 2) * 2;
+        this.radius = this.currentSize / 1.5;
+        this.opacity = Math.min(1, this.opacity + 0.0006 * deltaTime);
+    }
+
+    draw(ctx) {
+        if (!this.alive) return;
+    
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+    
+        // --- Body ---
+        ctx.fillStyle = this.frosted > 0 ? "blue" : "black";
+        ctx.fillRect(
+            this.x - this.wallWidth / 2,
+            this.y - this.wallHeight / 2,
+            this.wallWidth,
+            this.wallHeight
+        );
+    
+        // --- Smiley Face ---
+        const faceX = this.x;
+        const faceY = this.y;
+        const faceRadius = 20;
+    
+        // Face circle
+        ctx.beginPath();
+        ctx.arc(faceX, faceY, faceRadius, 0, Math.PI * 2);
+        ctx.fillStyle = this.frosted > 0 ? "#CCEEFF" : "lime";
+        ctx.fill();
+        ctx.closePath();
+    
+        // Eyes (wink animation)
+        const time = Date.now() / 500; // speed of wink
+        const wink = Math.floor(time) % 6 === 0; // wink every ~3 seconds
+    
+        ctx.fillStyle = "black";
+        ctx.beginPath();
+        // Left eye (always open)
+        ctx.arc(faceX - 7, faceY - 5, 3, 0, Math.PI * 2);
+        // Right eye (wink)
+        if (!wink) {
+            ctx.arc(faceX + 7, faceY - 5, 3, 0, Math.PI * 2);
+        } else {
+            ctx.moveTo(faceX + 4, faceY - 5);
+            ctx.lineTo(faceX + 10, faceY - 5);
+        }
+        ctx.fill();
+        ctx.closePath();
+    
+        // Mouth (slight wave animation)
+        const wave = Math.sin(Date.now() / 300) * 2; // curve wiggle
+        ctx.beginPath();
+        ctx.arc(faceX, faceY + 5 + wave, 10, 0, Math.PI);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "black";
+        ctx.stroke();
+        ctx.closePath();
+    
+        ctx.restore();
+        ctx.globalAlpha = 1;
+    }     
+          
+    takeDmg(dmg) {
+        if (Date.now() - this.lastHit < 50) return;
+        this.lastHit = Date.now();
+        this.health -= dmg;
+        this.showDamageNumber(dmg);  // ✅ NOW WORKING
+        if (this.health <= 0) this.alive = false;
+    }
+
+    applyFrost(level, duration) {
+        if (level > this.frosted || duration > this.frostTime) {
+            this.frosted = level;
+            this.frostTime = duration;
+        }
+    }
+
+    showDamageNumber(dmg) {
+        const dmgText = document.createElement("div");
+        dmgText.className = "damage-number";
+        dmgText.textContent = Math.floor(dmg);
+        dmgText.style.left = `${this.x}px`;
+        dmgText.style.top = `${this.y}px`;
+        document.body.appendChild(dmgText);
+        setTimeout(() => {
+            dmgText.style.opacity = "0";
+            dmgText.style.transform = "translateY(-30px)";
+        }, 50);
+        setTimeout(() => dmgText.remove(), 1000);
+    }
+
+    showHealth(ctx) {
+        if (!this.alive) return;
+        ctx.save();
+        ctx.fillStyle = "red";
+        ctx.font = "14px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(`Health: ${Math.round(this.health)}`, this.x, this.y - this.size / 2 - 25);
+        ctx.restore();
+    }
+
+    spawnDrops(drops) {
+        let count = Math.random() * (7 - 3) + 3
+        for (let i = 0; i < 5; i++) {
+          const offX = (Math.random() * 80 - 40); // scatter range
+          const offY = (Math.random() * 80 - 40);
+          drops.push(new Diamond(this.x + offX, this.y + offY));
+        }
+    }      
+}
+
+export class Shard1 {
+    constructor(x, y, minSpeed, maxSpeed, health, player, strength, weatherMulti) {
+        this.player = player;
+        this.x = x;
+        this.y = y;
+        this.alive = true;
+        this.opacity = 0;
+
+        // --- SHOOTER STATS ---
+        this.cooldown = 2000;
+        this.projectileSpeed = 0.004;
+        this.slowLevel = 1;
+        this.slowDuration = 1000;
+        this.lastShot = Date.now();
+        this.projectiles = [];
+
+        // --- Enemy visuals + combat ---
+        this.radius = 14; // small body
+        this.health = Math.ceil(health * weatherMulti);
+        this.strength = Number((Math.max(0.1, Math.random() * 4 + (strength - 2)) * weatherMulti).toFixed(1));
+        this.frosted = 0;
+        this.frostTime = 0;
+
+        this.lastHit = 0;
+    }
+
+    update(deltaTime, canvas) {
+        if (!this.alive || !this.player || !canvas) return;
+    
+        // --- move toward player ---
+        const dx = this.player.x - this.x;
+        const dy = this.player.y - this.y;
+        const dist = Math.hypot(dx, dy);
+    
+        if (dist > this.stopDist) {
+            this.x += (dx / dist) * this.speed * deltaTime;
+            this.y += (dy / dist) * this.speed * deltaTime;
+        }
+    
+        // fade in
+        this.opacity = Math.min(1, this.opacity + 0.0006 * deltaTime);
+    
+        // --- update projectiles ---
+        for (let i = this.projectiles.length - 1; i >= 0; i--) {
+            const p = this.projectiles[i];
+            p.x += p.dirX * p.speed * deltaTime;
+            p.y += p.dirY * p.speed * deltaTime;
+    
+            if (Math.hypot(p.x - this.player.x, p.y - this.player.y) < p.radius + this.player.radius) {
+                this.player.frosted = Math.max(this.player.frosted, this.slowLevel);
+                this.player.frostTime = Math.max(this.player.frostTime, this.slowDuration);
+                this.projectiles.splice(i, 1);
+            } else if (
+                p.x < -20 || p.x > canvas.width + 20 ||
+                p.y < -20 || p.y > canvas.height + 20
+            ) {
+                this.projectiles.splice(i, 1);
+            }
+        }
+    }    
+    
+    draw(ctx) {
+        if (!this.alive) return;
+    
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+    
+        ctx.fillStyle = "black";
+        ctx.fillRect(
+            this.x - this.wallWidth / 2,
+            this.y - this.wallHeight / 2,
+            this.wallWidth,
+            this.wallHeight
+        );
+    
+        ctx.restore();
+        ctx.globalAlpha = 1;
+    }    
+
+    takeDmg(dmg) {
+        if (Date.now() - this.lastHit < 50) return;
+        this.lastHit = Date.now();
+        this.health -= dmg;
+        this.showDamageNumber(dmg);
+        if (this.health <= 0) this.alive = false;
+    }
+
+    applyFrost(level, duration) {
+        if (level > this.frosted) {
+            this.frosted = level;
+        }
+        this.frostTime = Math.max(this.frostTime, duration);
+    }
+
+    showDamageNumber(dmg) {
+        const dmgText = document.createElement("div");
+        dmgText.className = "damage-number";
+        dmgText.textContent = Math.floor(dmg);
+        dmgText.style.left = `${this.x}px`;
+        dmgText.style.top = `${this.y}px`;
+        document.body.appendChild(dmgText);
+        setTimeout(() => {
+            dmgText.style.opacity = "0";
+            dmgText.style.transform = "translateY(-30px)";
+        }, 50);
+        setTimeout(() => dmgText.remove(), 1000);
+    }
+
+    showHealth(ctx) {
+        if (!this.alive) return;
+        ctx.save();
+        ctx.fillStyle = "red";
+        ctx.font = "14px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(`Health: ${Math.round(this.health)}`, this.x, this.y - this.radius - 12);
+        ctx.restore();
+    }
+
+    spawnDrops(drops) {
+        for (let i = 0; i < 10; i++) {
+          const offX = Math.random() * 80 - 40;
+          const offY = Math.random() * 80 - 40;
+          drops.push(new Diamond(this.x + offX, this.y + offY));
+        }
     }
 }
 

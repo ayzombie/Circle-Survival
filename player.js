@@ -7,7 +7,8 @@ export class Player {
     this.dir = 1;
     this.baseSpeed = 5;
     this.speed = this.baseSpeed;
-    this.maxHealth = 500;
+    this.maxHealth = 200;
+    this.vitalityLevel = 0;
     this.health = this.maxHealth;
     this.alive = true;
     this.keys = { w: false, a: false, s: false, d: false };
@@ -19,11 +20,15 @@ export class Player {
     this.xpMulti = 1;
     this.spinach = 0;
     this.dmgMulti = 1;
+    this.regenRate = 0;
+    this.regenLevel = 0;
+    this.lastSecond = 0;
     this.frosted = 0;
     this.frostTime = 0;
     this.lifeSteal = 0;
     this.hasVampireCloak = false;
     this.magnetLevel = 0;
+    this.magnetStrength = this.magnetLevel * 30 + 70;
     this.armor = 0;
     this.inventory = [];
 
@@ -40,6 +45,9 @@ export class Player {
 
   update(canvas, deltaTime, enemies) {
     if (this.alive == false) return;
+    if (this.health > this.maxHealth) this.health = this.maxHealth;
+    this.magnetStrength = this.magnetLevel * 30 + 70;
+
     if (this.keys.w) this.y -= this.speed;
     if (this.keys.s) this.y += this.speed;
     if (this.keys.a) {
@@ -56,12 +64,24 @@ export class Player {
 
     if (this.frostTime > 0) {
         this.frostTime -= deltaTime;
-        // slow down depending on frosted level (cap at 90% slow)
         const slowFactor = Math.min(this.frosted * 0.3, 0.9);
         this.speed = this.baseSpeed * (1 - slowFactor);
-    } else {
+    } 
+    else {
         this.frosted = 0;
         this.speed = this.baseSpeed;
+    }
+
+    if (Date.now() - this.lastSecond >= 1000 - this.level * 10 && this.health < this.maxHealth) {
+      this.lastSecond = Date.now();
+      if (this.regenLevel > 0 && this.regenRate === 0) this.regenRate = 0.1;
+      if (this.regenLevel <= 9) {
+        this.heal(this.regenRate * this.regenLevel, this);
+      }
+      else if (this.regenLevel === 10) {
+        this.regenRate = 1.5;
+        this.heal(this.regenRate, this);
+      }
     }
   }
 
@@ -111,15 +131,33 @@ export class Player {
     ctx.fillRect(-15, -15, this.width, this.height);
   
     ctx.restore(); // restore canvas so only the player is flipped
-  }   
+  }
 
   showStats(ctx, canvas) {
-    // === Health Text ===
-    ctx.fillStyle = "blue";
-    ctx.font = "24px Arial";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    ctx.fillText(`Health: ${this.health}`, 20, 35);
+    if (this.health !== this.maxHealth) {
+      const barLength = this.width + 20;  // length of the bar
+      const barHeight1 = 8;   // thickness of the bar
+      const barX = this.x - this.width / 2 - 3;
+      const barY = this.y - this.height + 5;
+      // progress
+      const hp = Math.max(0, Math.min(this.health / this.maxHealth, 1));
+      // background (black)
+      ctx.fillStyle = "black";
+      ctx.fillRect(barX, barY, barLength, barHeight1);
+      // fill (red)
+      ctx.fillStyle = "red";
+      ctx.fillRect(barX, barY, barLength * hp, barHeight1);
+      // optional border (you can delete this if you want ZERO extra)
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(barX, barY, barLength, barHeight1);
+    }
+    // // === Health Text ===
+    // ctx.fillStyle = "blue";
+    // ctx.font = "24px Arial";
+    // ctx.textAlign = "left";
+    // ctx.textBaseline = "top";
+    // ctx.fillText(`Health: ${this.health}`, 20, 35);
 
     // === XP Bar ===
     const barWidth = canvas.width - 40;
@@ -216,26 +254,38 @@ export class Player {
     }
   }
   
-  takeDamage(amount) {  //normal
+  takeDamage(dmg) {  //normal
+    let a = (this.armor - 10) * -1;
+    let amount = dmg * (a / 10);
+    amount = Math.max(0, amount);
+    amount = Number(amount.toFixed(1));
+    if (this.armor === 0) amount = dmg;
+
     const now = Date.now()
     if (now - this.lastHitTime < 300) return;
-    let hit = Math.ceil(amount);
-    this.health -= Math.min(hit, this.maxHealth);
-    this.lastHitTime = Date.now()
+    this.health -= Math.min(amount, this.maxHealth);
+    this.lastHitTime = Date.now();
 
     if (this.health <= 0) {
       this.health = 0;
       this.alive = false;
     }
     this.heal(Math.floor(this.lifeSteal), this);
-  }
+  } //TODO: make armor work!
 
-  takeDmg(amount, proj) { //for projectiles
+  takeDmg(dmg, proj) { //for projectiles
+    let a = (this.armor - 10) * -1;
+    let amount = dmg * (a / 10);
+    amount = Math.max(0, amount);
+    amount = Number(amount.toFixed(1));
+    if (this.armor === 0) amount = dmg;
+
     if (proj.frosted && proj.frostTime) { //for slow stuff
       if (proj.frosted > 0) {
         this.applyFrost(proj.frosted, proj.frostTime);
       }
     }
+
     let hit = Math.ceil(amount);
     this.health -= Math.min(hit, this.maxHealth);
     if (this.health <= 0) {
@@ -251,7 +301,7 @@ export class Player {
   }
 
   heal(amount, enemy) {
-    this.health += amount;
+    this.health = Number(Math.min(this.maxHealth, this.health + amount).toFixed(2));
     this.showHealNumber(amount, enemy);
   }
 
@@ -259,7 +309,7 @@ export class Player {
     if (amount <= 0) return;
     const healText = document.createElement("div");
     healText.className = "heal-number";
-    healText.textContent = Math.floor(amount);
+    healText.textContent = amount.toFixed(1);
 
     healText.style.left = `${enemy.x}px`;
     healText.style.top = `${enemy.y}px`;
