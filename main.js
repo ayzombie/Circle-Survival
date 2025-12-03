@@ -1,11 +1,6 @@
 import { Player } from "./player.js";
-import { Shard } from "./enemy.js";
-import { BloodEye } from "./enemy.js";
-import { BloodTurret } from "./enemy.js";
-import { Ram } from "./enemy.js";
-import { BloodThrall } from "./enemy.js";
-import { SleepySlime } from "./enemy.js";
-import { Wall } from "./enemy.js";
+import { Shard, BloodEye, BloodTurret, Ram, BloodThrall } from "./enemy.js";    //blood path
+import { SleepySlime, Wall, RoseBush, Alien, HealCrystal } from "./enemy.js";   //peace path
 import { Boss1 } from "./enemy.js";
 import { Ammo } from "./ammo.js";
 import { MagicWand } from "./weapons.js";
@@ -39,6 +34,7 @@ const enemyTypes = {
     BloodTurret: { cls: BloodTurret, weight: 100},
     SleepySlime: { cls: SleepySlime, weight: 50 }
 }
+
 
 //#region buttons
 const buyMagicWand = document.getElementById("buyMagicWand");
@@ -172,7 +168,18 @@ const upgradeVitality6 = document.getElementById("upgradeVitality6");
 const upgradeVitality7 = document.getElementById("upgradeVitality7");
 const upgradeVitality8 = document.getElementById("upgradeVitality8");
 const upgradeVitality9 = document.getElementById("upgradeVitality9");
-
+// === Armor ===
+const buyArmor = document.getElementById("buyArmor");
+const upgradeArmor1 = document.getElementById("upgradeArmor1");
+const upgradeArmor2 = document.getElementById("upgradeArmor2");
+const upgradeArmor3 = document.getElementById("upgradeArmor3");
+const upgradeArmor4 = document.getElementById("upgradeArmor4");
+// === Wings / Speed ===
+const buyWings = document.getElementById("buyWings");
+const upgradeWings1 = document.getElementById("upgradeWings1");
+const upgradeWings2 = document.getElementById("upgradeWings2");
+const upgradeWings3 = document.getElementById("upgradeWings3");
+const upgradeWings4 = document.getElementById("upgradeWings4");
 //#endregion
 
 let buttons = [
@@ -293,9 +300,18 @@ let buttons = [
     upgradeVitality6,
     upgradeVitality7,
     upgradeVitality8,
-    upgradeVitality9
+    upgradeVitality9,
+    buyArmor,
+    upgradeArmor1,
+    upgradeArmor2,
+    upgradeArmor3,
+    upgradeArmor4,
+    buyWings,
+    upgradeWings1,
+    upgradeWings2,
+    upgradeWings3,
+    upgradeWings4,
 ]; 
-
 
 function loadButtons() {
     resetBtn.addEventListener("click", () => {
@@ -1256,6 +1272,74 @@ function loadButtons() {
         player.maxHealth += 100;
         // No further upgrades
     });
+
+    buyArmor.addEventListener("click", () => {
+        player.armor = 1;
+        buttons = buttons.filter(b => b !== buyArmor);
+        buttons.push(upgradeArmor1);
+        console.log("Bought base Armor!");
+    });
+    
+    upgradeArmor1.addEventListener("click", () => {
+        player.armor = 2;
+        buttons = buttons.filter(b => b !== upgradeArmor1);
+        buttons.push(upgradeArmor2);
+        console.log("Upgraded Armor to Level 2!");
+    });
+    
+    upgradeArmor2.addEventListener("click", () => {
+        player.armor = 3;
+        buttons = buttons.filter(b => b !== upgradeArmor2);
+        buttons.push(upgradeArmor3);
+        console.log("Upgraded Armor to Level 3!");
+    });
+    
+    upgradeArmor3.addEventListener("click", () => {
+        player.armor = 4;
+        buttons = buttons.filter(b => b !== upgradeArmor3);
+        buttons.push(upgradeArmor4);
+        console.log("Upgraded Armor to Level 4!");
+    });
+    
+    upgradeArmor4.addEventListener("click", () => {
+        player.armor = 5;
+        buttons = buttons.filter(b => b !== upgradeArmor4);
+        console.log("Max Armor Level reached!");
+    });
+
+    buyWings.addEventListener("click", () => {
+        player.speedLevel = 1;
+        console.log("Bought Wings!");
+        buttons = buttons.filter(b => b !== buyWings);
+        buttons.push(upgradeWings1);
+    });
+    
+    upgradeWings1.addEventListener("click", () => {
+        player.speedLevel = 2;
+        console.log("Upgraded Wings to Level 2!");
+        buttons = buttons.filter(b => b !== upgradeWings1);
+        buttons.push(upgradeWings2);
+    });
+    
+    upgradeWings2.addEventListener("click", () => {
+        player.speedLevel = 3;
+        console.log("Upgraded Wings to Level 3!");
+        buttons = buttons.filter(b => b !== upgradeWings2);
+        buttons.push(upgradeWings3);
+    });
+    
+    upgradeWings3.addEventListener("click", () => {
+        player.speedLevel = 4;
+        console.log("Upgraded Wings to Level 4!");
+        buttons = buttons.filter(b => b !== upgradeWings3);
+        buttons.push(upgradeWings4);
+    });
+    
+    upgradeWings4.addEventListener("click", () => {
+        player.speedLevel = 5;
+        console.log("Max Wings Level reached!");
+        buttons = buttons.filter(b => b !== upgradeWings4);
+    });
 };
 loadButtons();
 
@@ -1284,7 +1368,6 @@ let doorForceInterval = 0;
 let damageForceInterval = 0;
 let screenDimAlpha = 0;
 
-
 let dayEvents = ["day"];
 let nightEvents = [ "bloodmoon", "night"];
 const moonCraters = [];
@@ -1301,6 +1384,7 @@ let pausedGame = false;
 let lastTime = performance.now();
 let timer = 0;  
 let alpha = 0;
+let poisonAlpha = 0;
 let lastPlayerHealth = player.health;
 let level = 0;
 let size = 20;  
@@ -2093,8 +2177,9 @@ const levels = {
         enemyStrength: 2.6,
         enemyTypes: {
             Shard: { cls: Shard, weight: 30 },
-            SleepySlime: { cls: SleepySlime, weight: 40 },
+            SleepySlime: { cls: SleepySlime, weight: 30 },
             Wall: { cls: Wall, weight: 30 },
+            RoseBush: { cls: RoseBush, weight: 10 },
         },
         next: { left: "peace9" }
     },
@@ -2107,7 +2192,8 @@ const levels = {
         enemyHealth: 13,
         enemyStrength: 2.7,
         enemyTypes: {
-            Wall: { cls: Wall, weight: 100 },
+            Shard: { cls: Shard, weight: 90 },
+            RoseBush: { cls: RoseBush, weight: 10 },
         },
         next: { left: "peace10" }
     },
@@ -2135,7 +2221,10 @@ const levels = {
         enemyHealth: 16,
         enemyStrength: 3,
         enemyTypes: {
-            Wall: { cls: Wall, weight: 100 },
+            Shard: { cls: Shard, weight: 25 },
+            SleepySlime: { cls: SleepySlime, weight: 25 },
+            Wall: { cls: Wall, weight: 25 },
+            RoseBush: { cls: RoseBush, weight: 25 },
         },
         next: { left: "peace12" }
     },
@@ -2161,9 +2250,9 @@ const levels = {
         enemyHealth: 18,
         enemyStrength: 3.3,
         enemyTypes: {
-            Shard: { cls: Shard, weight: 30 },
-            SleepySlime: { cls: SleepySlime, weight: 40 },
-            Wall: { cls: Wall, weight: 30 },
+            SleepySlime: { cls: SleepySlime, weight: 50 },
+            Wall: { cls: Wall, weight: 40 },
+            Alien: { cls: Alien, weight: 10 },
         },
         next: { left: "peace14" }
     },
@@ -2175,6 +2264,12 @@ const levels = {
         enemiesPerWave: 17,
         enemyHealth: 19,
         enemyStrength: 3.5,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 20 },
+            SleepySlime: { cls: SleepySlime, weight: 30 },
+            Wall: { cls: Wall, weight: 20 },
+            RoseBush: { cls: RoseBush, weight: 30 },
+        },
         next: { left: "peace15" }
     },
     peace15: {
@@ -2186,16 +2281,24 @@ const levels = {
         enemyHealth: 30,
         enemyStrength: 5,
         bosses: 1,
+        enemyTypes: {
+            SleepySlime: { cls: SleepySlime, weight: 30 },
+            Wall: { cls: Wall, weight: 30 },
+            RoseBush: { cls: RoseBush, weight: 40 },
+        },
         next: { left: "peace16" }
     },
     peace16: {
         id: "peace16",
         path: "peace",
         info: "Balance shifts...",
-        waves: 7,
-        enemiesPerWave: 18,
-        enemyHealth: 20,
+        waves: 10,
+        enemiesPerWave: 10,
+        enemyHealth: 50,
         enemyStrength: 4,
+        enemyTypes: {
+            RoseBush: { cls: RoseBush, weight: 100 },
+        },
         next: { left: "peace17" }
     },
     peace17: {
@@ -2206,6 +2309,12 @@ const levels = {
         enemiesPerWave: 19,
         enemyHealth: 21,
         enemyStrength: 4.1,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 15 },
+            SleepySlime: { cls: SleepySlime, weight: 35 },
+            RoseBush: { cls: RoseBush, weight: 35 },
+            HealCrystal: { cls: HealCrystal, weight: 15}
+        },
         next: { left: "peace18" }
     },
     peace18: {
@@ -2216,6 +2325,13 @@ const levels = {
         enemiesPerWave: 20,
         enemyHealth: 23,
         enemyStrength: 4.2,
+        enemyTypes: {
+            Wall: { cls: Wall, weight: 20 },
+            SleepySlime: { cls: SleepySlime, weight: 25 },
+            RoseBush: { cls: RoseBush, weight: 25 },
+            Alien: { cls: Alien, weight: 25 },
+            HealCrystal: { cls: HealCrystal, weight: 5}
+        },
         next: { left: "peace19" }
     },
     peace19: {
@@ -2227,6 +2343,13 @@ const levels = {
         enemyHealth: 24,
         enemyStrength: 4.5,
         bosses: 1,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 15 },
+            Wall: { cls: Wall, weight: 10 },
+            SleepySlime: { cls: SleepySlime, weight: 20 },
+            RoseBush: { cls: RoseBush, weight: 25 },
+            Alien: { cls: Alien, weight: 30 }
+        },
         next: { left: "peace20" }
     },
     peace20: {
@@ -2238,6 +2361,9 @@ const levels = {
         enemyHealth: 25,
         enemyStrength: 4.7,
         bosses: 3,
+        enemyTypes: {
+            Alien: { cls: Alien, weight: 100 },
+        },
         next: { left: "peace21" }
     },
     peace21: {
@@ -2248,6 +2374,13 @@ const levels = {
         enemiesPerWave: 24,
         enemyHealth: 26,
         enemyStrength: 5,
+        enemyTypes: {
+            Wall: { cls: Wall, weight: 10 },
+            SleepySlime: { cls: SleepySlime, weight: 25 },
+            RoseBush: { cls: RoseBush, weight: 25 },
+            Alien: { cls: Alien, weight: 25 },
+            HealCrystal: { cls: HealCrystal, weight: 15}
+        },
         next: { left: "peace22" }
     },
     peace22: {
@@ -2258,6 +2391,14 @@ const levels = {
         enemiesPerWave: 26,
         enemyHealth: 28,
         enemyStrength: 5.2,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 5 },
+            Wall: { cls: Wall, weight: 10 },
+            SleepySlime: { cls: SleepySlime, weight: 20 },
+            RoseBush: { cls: RoseBush, weight: 25 },
+            Alien: { cls: Alien, weight: 25 },
+            HealCrystal: { cls: HealCrystal, weight: 15}
+        },
         next: { left: "peace23" }
     },
     peace23: {
@@ -2269,6 +2410,11 @@ const levels = {
         enemiesPerWave: 35,
         enemyHealth: 30,
         enemyStrength: 6,
+        enemyTypes: {
+            RoseBush: { cls: RoseBush, weight: 25 },
+            Alien: { cls: Alien, weight: 25 },
+            HealCrystal: { cls: HealCrystal, weight: 50}
+        },
         next: { left: "peace24" }
     },
     peace24: {
@@ -2276,20 +2422,34 @@ const levels = {
         path: "peace",
         info: "the final attack-",
         waves: 7,
-        enemiesPerWave: 50,
+        enemiesPerWave: 40,
         enemyHealth: 32,
         enemyStrength: 6.5,
+        enemyTypes: {
+            SleepySlime: { cls: SleepySlime, weight: 10 },
+            RoseBush: { cls: RoseBush, weight: 10 },
+            Alien: { cls: Alien, weight: 50 },
+            HealCrystal: { cls: HealCrystal, weight: 30}
+        },
         next: { left: "peace25" }
     },
     peace25: {
         id: "peace25",
         path: "peace",
         info: "???",
-        waves: 2,
+        waves: 3,
         bosses: 4,
-        enemiesPerWave: 250,
+        enemiesPerWave: 55,
         enemyHealth: 10,
         enemyStrength: 0.5,
+        enemyTypes: {
+            Shard: { cls: Shard, weight: 5 },
+            Wall: { cls: Wall, weight: 10 },
+            SleepySlime: { cls: SleepySlime, weight: 25 },
+            RoseBush: { cls: RoseBush, weight: 25 },
+            Alien: { cls: Alien, weight: 25 },
+            HealCrystal: { cls: HealCrystal, weight: 10 }
+        },
         next: {},
     },
     machinery1: {
@@ -2795,9 +2955,9 @@ function spawnDoors() {
     if (curLvl.id === "start") {
         doorDefinitions = [
             { dir: "up", color: "orange", text: "blood"},      // red-ish (blood)
-            // { dir: "right", color: "#FFB74D", text: "machinery"},   // orange (combat/machinery)
-            // { dir: "down", color: "#6EC6FF", text: "combat"},    // blue (machinery/peace)
-            // { dir: "left", color: "#90EE90", text: "peace"}   // green (peace)
+            { dir: "right", color: "#FFB74D", text: "machinery"},   // orange (combat/machinery)
+            { dir: "down", color: "#6EC6FF", text: "combat"},    // blue (machinery/peace)
+            { dir: "left", color: "#90EE90", text: "peace"}   // green (peace)
         ];
     }
     else if (curLvl.path === "blood") {
@@ -3286,6 +3446,26 @@ function isButtonValid(btn) {
     
         return targetLevel === player.regenLevel;
     }
+
+    if (id.startsWith("upgradeArmor")) {
+        // If the player doesn't have Spinach yet, don't allow upgrade
+        if (player.armor === undefined) return false;
+    
+        const match = id.match(/\d+$/);
+        const targetLevel = match ? parseInt(match[0]) : 1;
+    
+        return targetLevel === player.armor;
+    }
+
+    if (id.startsWith("upgradeWings")) {
+        // If the player doesn't have Spinach yet, don't allow upgrade
+        if (player.speedLevel === undefined) return false;
+    
+        const match = id.match(/\d+$/);
+        const targetLevel = match ? parseInt(match[0]) : 1;
+    
+        return targetLevel === player.speedLevel;
+    }
   
     // --- Handle buy buttons (always valid if not owned) ---
     if (id.startsWith("buyMagicWand")) {
@@ -3335,6 +3515,12 @@ function isButtonValid(btn) {
     }
     if (id.startsWith("buyVitality")) {
         return player.vitalityLevel === 0; // can only buy once
+    }
+    if (id.startsWith("buyArmor")) {
+        return player.armor === 0; // can only buy once
+    }
+    if (id.startsWith("buyWings")) {
+        return player.speedLevel === 0; // can only buy once
     }
     
   
@@ -3670,6 +3856,32 @@ function spawnMonsters() {
     enemies.push(new selectedEnemy(canvas.width * Math.random(), canvas.height * Math.random(), 1, 4, thisHP, player, Math.random() * 16.7, weatherMulti, enemies));
 }
 
+function drawVignette2(color, alpha) {
+    const canvas = document.querySelector("canvas");
+    const ctx = canvas.getContext("2d");
+
+    ctx.save();
+
+    // full radial vignette (covers top AND bottom)
+    const grad = ctx.createRadialGradient(
+        canvas.width / 2,
+        canvas.height / 2,
+        canvas.width * 0.1,   // inner clear area
+        canvas.width / 2,
+        canvas.height / 2,
+        canvas.width * 1.2    // extends past edges so corners & bottom are tinted
+    );
+
+    grad.addColorStop(0, `rgba(${color}, 0)`);
+    grad.addColorStop(1, `rgba(${color}, ${alpha})`);
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.restore();
+}
+
+
 function gameLoop(time) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -3809,16 +4021,21 @@ function gameLoop(time) {
         let e = enemies[i];
       
         if (!paused) {
-            e.update(deltaTime, canvas, weatherMulti);
+            e.update(deltaTime, canvas, ctx);
         }
         const dist = Math.hypot(e.x - player.x, e.y - player.y);
-        if (timeOfDay > 0.03 && timeOfDay <= 1) {
-            e.draw(ctx);
+        if (timeOfDay > 0.03 && timeOfDay <= 1 || dist < 200) {
+            e.draw(ctx, time / 1000);
             e.showHealth(ctx);
-        } else if (dist < 200) {
-            e.draw(ctx);
-            e.showHealth(ctx);
-        }        
+
+        }
+        if (e.projectiles) {
+            for (let i = e.projectiles.length - 1; i >= 0; i--) {    //update projectiles
+                const p = e.projectiles[i];
+                const dist = Math.hypot(p.x - player.x, p.y - player.y);
+                if (dist < 200 || (timeOfDay > 0.03 && timeOfDay <= 1)) p.draw(ctx);
+            }
+        }
 
         if (!e.alive) {
             e.spawnDrops(drops);
@@ -3846,6 +4063,7 @@ function gameLoop(time) {
     }
 
     if (lastPlayerHealth > player.health) {
+        alpha = 0;
         lastPlayerHealth = player.health;
         alpha = 1;
     }
@@ -3861,7 +4079,14 @@ function gameLoop(time) {
     if (paused) showPlayerStats();
     if (levelComplete || !doorForceActive) drawScreenDimmer();
 
-    if (alpha > 0) alpha -= 0.06
+    if (player.poisoned) poisonAlpha = 1;
+    else if (poisonAlpha > 0) poisonAlpha -= 0.005;
+    if (poisonAlpha > 0) {
+        drawVignette2("120,255,170", poisonAlpha);
+    }
+    if (poisonAlpha < 0) poisonAlpha = 0;
+
+    if (alpha > 0) alpha -= 0.07;
     if (alpha <= 0) alpha = 0;
     drawRedVignette(alpha);
     

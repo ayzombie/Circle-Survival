@@ -79,3 +79,95 @@ export class BloodSpike {
         ctx.restore();
     }
 }
+
+export class PoisonDart {
+    constructor(x, y, angle, strength, player, frosted, frostTime, poisonRate, poisonTime, poisonStrength) {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.strength = strength;
+        this.player = player;
+        this.speed = Math.random() * (9 - 4) + 4;    // pixels per frame (tweak to taste)
+        this.size = 14;    // visible size
+        this.frosted = frosted;
+        this.frostTime = frostTime;
+        this.poisonStrength = poisonStrength;
+        this.poisonTime = poisonTime;
+        this.poisonRate = poisonRate;
+        this.alive = true;
+    }
+
+    update(deltaTime, canvas) {
+        if (!this.alive) return;
+        // movement
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+    
+        // --- PLAYER COLLISION (AABB) ---
+        // Player rectangle bounds
+        const left   = this.player.x - this.player.width  / 2;
+        const right  = this.player.x + this.player.width  / 2;
+        const top    = this.player.y - this.player.height / 2;
+        const bottom = this.player.y + this.player.height / 2;
+    
+        // Projectile is treated as a point (add radius if needed)
+        if (this.x > left && this.x < right && this.y > top && this.y < bottom) {
+            this.player.takeDmg(this.strength, this);
+            this.alive = false;
+            return;
+        }
+        // --- END COLLISION ---
+    
+        // off-screen cleanup
+        if (
+            this.x < -100 || this.x > canvas.width + 100 ||
+            this.y < -100 || this.y > canvas.height + 100
+        ) {
+            this.alive = false;
+        }
+    }    
+
+    draw(ctx) {
+        if (!this.alive) return;
+    
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle + Math.PI / 2);
+    
+        // 🔥 FROST check stays, colors poison-themed
+        if (this.frosted > 0) {
+            ctx.fillStyle = "#0066CC";   // icy blue frozen body
+            ctx.strokeStyle = "#88CCFF"; // light blue frozen outline
+        } else {
+            ctx.fillStyle = "#2BBF55";   // ✅ bright poison green body
+            ctx.strokeStyle = "#0A4F1A"; // ✅ dark green poison outline
+        }
+    
+        ctx.lineWidth = 1;
+    
+        ctx.beginPath();
+        ctx.moveTo(0, -this.size);                
+        ctx.lineTo(this.size * 0.45, this.size);  
+        ctx.lineTo(-this.size * 0.45, this.size); 
+        ctx.closePath();
+    
+        ctx.fill();
+        ctx.stroke();
+    
+        // Dart sheen highlight — also green-ish if not frozen
+        if (this.frosted > 0) {
+            ctx.fillStyle = "rgba(200,230,255,0.15)"; // pale blue sheen
+        } else {
+            ctx.fillStyle = "rgba(180,255,200,0.18)"; // soft toxic green sheen
+        }
+    
+        ctx.beginPath();
+        ctx.moveTo(0, -this.size * 0.6);
+        ctx.lineTo(this.size * 0.18, this.size * 0.5);
+        ctx.lineTo(-this.size * 0.18, this.size * 0.5);
+        ctx.closePath();
+        ctx.fill();
+    
+        ctx.restore();
+    }    
+}

@@ -5,7 +5,8 @@ export class Player {
     this.width = 40;
     this.height = 40;
     this.dir = 1;
-    this.baseSpeed = 5;
+    this.speedLevel = 0;
+    this.baseSpeed = this.speedLevel + 5;
     this.speed = this.baseSpeed;
     this.maxHealth = 200;
     this.vitalityLevel = 0;
@@ -30,6 +31,10 @@ export class Player {
     this.magnetLevel = 0;
     this.magnetStrength = this.magnetLevel * 30 + 70;
     this.armor = 0;
+    this.poisoned = false;
+    this.poisonTime = 0;
+    this.poisonStrength = 0;
+    this.poisonRate = 0;
     this.inventory = [];
 
     // key listeners
@@ -47,6 +52,7 @@ export class Player {
     if (this.alive == false) return;
     if (this.health > this.maxHealth) this.health = this.maxHealth;
     this.magnetStrength = this.magnetLevel * 30 + 70;
+    this.baseSpeed = this.speedLevel + 5;
 
     if (this.keys.w) this.y -= this.speed;
     if (this.keys.s) this.y += this.speed;
@@ -61,8 +67,11 @@ export class Player {
     // clamp to keep player inside canvas
     this.x = Math.max(0, Math.min(this.x, canvas.width - this.width));
     this.y = Math.max(0, Math.min(this.y, canvas.height - this.height));
+    if (Date.now() - this.lastSecond >= 1000) {
+      this.lastSecond = Date.now();
+    }
 
-    if (this.frostTime > 0) {
+    if (this.frostTime > 0) { //frosted
         this.frostTime -= deltaTime;
         const slowFactor = Math.min(this.frosted * 0.3, 0.9);
         this.speed = this.baseSpeed * (1 - slowFactor);
@@ -71,19 +80,31 @@ export class Player {
         this.frosted = 0;
         this.speed = this.baseSpeed;
     }
+    if (this.poisoned) {
+      this.poisonTime -= deltaTime;
+      if (this.poisonTime <= 0) {
+          this.poisoned = false;
+          this.poisonStrength = 0;
+      } else {
+          if (Date.now() - this.lastSecond >= this.poisonRate) {
+              this.lastSecond = Date.now();  // IMPORTANT!
+              this.health -= this.poisonStrength;
+              this.showDamageNumber(this.poisonStrength);
+          }
+      }
+  }  
 
     if (Date.now() - this.lastSecond >= 1000 - this.level * 10 && this.health < this.maxHealth) {
-      this.lastSecond = Date.now();
-      if (this.regenLevel > 0 && this.regenRate === 0) this.regenRate = 0.1;
-      if (this.regenLevel <= 9) {
-        this.heal(this.regenRate * this.regenLevel, this);
-      }
-      else if (this.regenLevel === 10) {
-        this.regenRate = 1.5;
-        this.heal(this.regenRate, this);
+        if (this.regenLevel > 0 && this.regenRate === 0) this.regenRate = 0.1;
+        if (this.regenLevel <= 9) {
+          this.heal(this.regenRate * this.regenLevel, this);
+        }
+        else if (this.regenLevel === 10) {
+          this.regenRate = 1.5;
+          this.heal(this.regenRate, this);
+        }
       }
     }
-  }
 
   draw(ctx) {
     ctx.save();               // save canvas state
@@ -220,8 +241,11 @@ export class Player {
 
       if (dist < drop.radius + Math.max(this.width, this.height)/2) { //collected!
         console.log(`Picked up a ${drop.type}!`);
-        if (drop.type == "emerald") {
+        if (drop.type == "diamond") {
           this.xp += 1 * this.xpMulti;
+        }
+        if (drop.type == "emerald") {
+          this.xp += 2 * this.xpMulti;
         }
         if (drop.type == "ruby") {
           this.xp += 3 * this.xpMulti * this.level;
@@ -263,7 +287,9 @@ export class Player {
 
     const now = Date.now()
     if (now - this.lastHitTime < 300) return;
-    this.health -= Math.min(amount, this.maxHealth);
+    let realHit = Math.min(amount, this.maxHealth);
+    this.health -= realHit;
+    this.showDamageNumber(realHit);
     this.lastHitTime = Date.now();
 
     if (this.health <= 0) {
@@ -274,7 +300,7 @@ export class Player {
   } //TODO: make armor work!
 
   takeDmg(dmg, proj) { //for projectiles
-    let a = (this.armor - 10) * -1;
+    let a = (this.armor - 10) * -1; 
     let amount = dmg * (a / 10);
     amount = Math.max(0, amount);
     amount = Number(amount.toFixed(1));
@@ -285,9 +311,16 @@ export class Player {
         this.applyFrost(proj.frosted, proj.frostTime);
       }
     }
+    if (proj.poisonStrength && proj.poisonTime && proj.poisonRate) { //for poison stuff
+      if (proj.poisonTime > 0) {
+        this.applyPoison(proj.poisonStrength, proj.poisonTime, proj.poisonRate);
+      }
+    }
 
     let hit = Math.ceil(amount);
-    this.health -= Math.min(hit, this.maxHealth);
+    let realHit = Math.min(hit, this.maxHealth);
+    this.health -= realHit;
+    this.showDamageNumber(realHit);
     if (this.health <= 0) {
       this.health = 0;
       this.alive = false;
@@ -298,6 +331,13 @@ export class Player {
   applyFrost(level, frostTime) {
     this.frosted = level;
     this.frostTime = frostTime;  
+  }
+
+  applyPoison(level, time, rate) {
+    this.poisonStrength = level;
+    this.poisonTime = time;
+    this.poisonRate = rate;
+    this.poisoned = true;
   }
 
   heal(amount, enemy) {
@@ -321,5 +361,23 @@ export class Player {
     }, 50);
 
     setTimeout(() => healText.remove(), 1000);
+  }
+
+  showDamageNumber(dmg) {
+    if (dmg <= 0) return;
+    const dmgText = document.createElement("div");
+    dmgText.className = "player-damage-number";
+    dmgText.textContent = Number(dmg.toFixed(1));
+
+    dmgText.style.left = `${this.x}px`;
+    dmgText.style.top = `${this.y}px`;
+    document.body.appendChild(dmgText);
+
+    setTimeout(() => {
+        dmgText.style.opacity = "0";
+        dmgText.style.transform = "translateY(-35px)";
+    }, 50);
+
+    setTimeout(() => dmgText.remove(), 1200);
   }
 }

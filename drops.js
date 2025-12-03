@@ -42,7 +42,7 @@ export class Drop {
 
 export class Diamond extends Drop {
   constructor(x, y) {
-    super(x, y, "emerald");
+    super(x, y, "diamond");
   }
 
   update(player) {
